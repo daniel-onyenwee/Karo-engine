@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LOG10E = exports.LN2 = exports.LN10 = exports.LOG2E = exports.SQRT2 = exports.SQRT1_2 = exports.E = exports.PI = void 0;
+var PI = Math.PI, E = Math.E, SQRT1_2 = Math.SQRT1_2, SQRT2 = Math.SQRT2, LN10 = Math.LN10, LN2 = Math.LN2, LOG10E = Math.LOG10E, LOG2E = Math.LOG2E;
+exports.PI = PI;
+exports.E = E;
+exports.SQRT1_2 = SQRT1_2;
+exports.SQRT2 = SQRT2;
+exports.LN10 = LN10;
+exports.LN2 = LN2;
+exports.LOG10E = LOG10E;
+exports.LOG2E = LOG2E;
+Math.floor;
