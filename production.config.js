@@ -1,7 +1,7 @@
 var path = require("path")
 
 const config = {
-  entry: './index.ts',
+  entry: './src/index.ts',
   target: 'web',
   mode: 'production',
   module: {

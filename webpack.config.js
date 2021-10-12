@@ -1,7 +1,7 @@
 var path = require("path")
 
 const config = {
-  entry: './index.ts',
+  entry: './src/index.ts',
   devtool: 'source-map',
   target: 'web',
   mode: 'development',
