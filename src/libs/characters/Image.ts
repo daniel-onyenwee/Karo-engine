@@ -1,7 +1,6 @@
 import { Container } from "."
 import { Game } from ".."
-import { Color } from "../../typeDecleration"
-import { Vector2 } from "../math"
+import { Vector2, Color } from "../math"
 import { ContainerPropertyOption } from "./Container"
 
 interface ImagePropertyOption extends ContainerPropertyOption { 
@@ -47,7 +46,7 @@ export default class Image extends Container {
             "shadow offset": propertyOption["shadow offset"] != undefined ? propertyOption["shadow offset"] : new Vector2(0, 0),
             "shadow blur": propertyOption["shadow blur"] != undefined ? propertyOption["shadow blur"] : 0,
             "line width": propertyOption["line width"] != undefined ? propertyOption["line width"] : 1,
-            "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : { red: 0, green: 0, blue: 0, alpha: 0 }
+            "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new Color(0,0,0,0),
         })
 
     }
@@ -93,7 +92,7 @@ export default class Image extends Container {
             graphics.translate(-this.displayPosition.x, -this.displayPosition.y)
             graphics.globalAlpha = (this.parent instanceof Game ? (this.get("opacity") as number) : (this.parent.get("opacity") as number) * (this.get("opacity") as number))
             graphics.shadowBlur = this.get("shadow blur") as number
-            graphics.shadowColor = `rgba(${(this.get("shadow color") as Color).red}, ${(this.get("shadow color") as Color).green}, ${(this.get("shadow color") as Color).blue}, ${(this.get("shadow color") as Color).alpha != undefined ? (this.get("shadow color") as Color).alpha : 1})`
+            graphics.shadowColor = (this.get("color") as Color).toString()
             graphics.shadowOffsetX = (this.get("shadow offset") as Vector2).x
             graphics.shadowOffsetY = (this.get("shadow offset") as Vector2).y
             let imageAssetsName:string = (this.get("source") as Array<string>)[this.currentIndex]

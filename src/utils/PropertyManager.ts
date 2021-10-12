@@ -1,5 +1,4 @@
-import { Vector2 } from "../libs/math"
-import { Color } from "../typeDecleration"
+import { Vector2, Color } from "../libs/math"
 
 type PropertyValueType = number|boolean|string|Vector2|Array<string>|Array<number>|Array<boolean>|Array<Vector2>|Color
 

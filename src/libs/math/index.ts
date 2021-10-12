@@ -1,3 +1,4 @@
+import Color from "./Color"
 import {
     PI,
     E,
@@ -21,6 +22,7 @@ import Vector2 from "./Vector2"
 
 export {
     Vector2,
+    Color,
     PI,
     E,
     SQRT1_2,
