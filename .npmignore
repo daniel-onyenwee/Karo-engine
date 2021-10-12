@@ -117,5 +117,19 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-src/**/*.ts
 docs/
+webpack.config.js
+tsconfig.json
+production.config.js
+.*.swp
+._*
+.DS_Store
+.git
+.hg
+.npmrc
+.lock-wscript
+.svn
+.wafpickle-*
+config.gypi
+CVS
+npm-debug.log
