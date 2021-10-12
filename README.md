@@ -1,14 +1,14 @@
 <h1 align="center">Welcome to Karo Engine 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-0.0.1--beta-blue.svg?cacheSeconds=2592000" />
-  <a href="https://github.com/daniel-onyenwee/karo-engine#readme" target="_blank">
+  <a href="https://daniel-onyenwee.github.io/Karo-engine/" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
   </a>
   <a href="https://github.com/daniel-onyenwee/karo-engine/graphs/commit-activity" target="_blank">
     <img alt="Maintenance" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" />
   </a>
-  <a href="https://github.com/daniel-onyenwee/karo-engine/blob/master/LICENSE" target="_blank">
-    <img alt="License: MIT" src="https://img.shields.io/github/license/daniel-onyenwee/Karo Engine" />
+  <a href="https://github.com/daniel-onyenwee/Karo-engine/blob/main/LICENSE" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/github/license/daniel-onyenwee/karo-engine" />
   </a>
 </p>
 
