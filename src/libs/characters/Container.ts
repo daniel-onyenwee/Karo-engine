@@ -86,6 +86,12 @@ export default class Container {
     public add = this.Storage.add.bind(this.Storage)
 
     /**
+     * public method to get all the character propertries
+     * @returns return a `Map` with the property name as the map key and the property value as the map value
+     */
+    public entry = this.propertyManager.entry.bind(this.propertyManager)
+
+    /**
      * public method to get a character
      * @param path character path (e.g `character/character_child`)
      * @returns return the character instance if the character exist else return `null`
