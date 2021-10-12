@@ -11,6 +11,7 @@
     "wp-help": "webpack help",
     "typedoc-help": "typedoc --help"
   },
+  "homepage": "https://github.com/daniel-onyenwee/karo-engine.git#readme",
   "keywords": [
     "game",
     "engine",
@@ -19,6 +20,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/daniel-onyenwee/karo-engine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/daniel-onyenwee/karo-engine/issues"
   },
   "author": "daniel_onyenwee",
   "license": "MIT",
