@@ -4,10 +4,12 @@
   "description": "a simple game engine for the karo project",
   "main": "src/index.js",
   "scripts": {
-    "tsc-watc": "tsc --watch",
-    "help": "webpack help",
-    "watch": "webpack watch",
-    "build-prod": "webpack -c production.config.js"
+    "tsc-watch": "tsc --watch",
+    "wp-watch": "webpack watch",
+    "wp-build-prod": "webpack -c production.config.js",
+    "typedoc-watch": "typedoc --watch src/index.ts --out docs",
+    "wp-help": "webpack help",
+    "typedoc-help": "typedoc --help"
   },
   "keywords": [
     "game",
