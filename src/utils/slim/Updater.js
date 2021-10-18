@@ -33,6 +33,12 @@ var Updater = /** @class */ (function () {
         });
         predefineCharacterList.length = 0;
         this.storage.clear();
+        this.storage.characterTree = {
+            name: this.character.get("name"),
+            type: this.character.type,
+            path: this.character.get("path"),
+            children: new Map()
+        };
         characterList.forEach(function (character) {
             if (!character.get("is destroyed")) {
                 var path = String();
@@ -44,6 +50,7 @@ var Updater = /** @class */ (function () {
                 character.update(dt);
                 _this.storage.nativeAdd(character);
                 _this.render.add(character.get("z index"), character);
+                _this.storage.characterTree.children.set(character.get("name"), character.tree);
             }
         });
     };

@@ -1,6 +1,10 @@
 import { Render, Storage } from "."
 import { Game } from "../.."
-import { CharacterChildrenType, CharacterParentType } from "../../typeDecleration"
+import { 
+    CharacterChildrenType, 
+    CharacterParentType, 
+    CharacterTreeOption 
+} from "../../typeDecleration"
 
 export default class Updater {
     private storage:Storage
@@ -47,6 +51,13 @@ export default class Updater {
         predefineCharacterList.length = 0
 
         this.storage.clear()
+
+        this.storage.characterTree = {
+            name: this.character.get("name") as string,
+            type: this.character.type,
+            path: this.character.get("path") as string,
+            children: new Map<string, CharacterTreeOption>()
+        }
         
         characterList.forEach(character => {
             if(!character.get("is destroyed")) {
@@ -59,9 +70,9 @@ export default class Updater {
                 character.update(dt)
                 this.storage.nativeAdd(character)
                 this.render.add(character.get("z index") as number, character)
+                this.storage.characterTree.children.set(character.get("name") as string, character.tree)
             }
         })
 
-        
     }
 }
