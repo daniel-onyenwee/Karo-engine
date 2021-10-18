@@ -56,13 +56,26 @@ var PropertyManager = /** @class */ (function () {
      * @param value value to set the property with
      */
     PropertyManager.prototype.set = function (name, value) {
-        if (this.propertyMap.has(name)) {
+        if (this.propertyMap.has(name) && !this.readonlyPropertySet.has(name)) {
             this.propertyMap.set(name, {
                 value: value,
                 readonly: this.propertyMap.get(name).readonly,
                 type: this.propertyMap.get(name).type
             });
         }
+    };
+    /**
+     * public method to override the value of a readonly property
+     * @param name name name of the property to override
+     * @param value value to override the property with
+     */
+    PropertyManager.prototype.override = function (name, value) {
+        if (this.readonlyPropertySet.has(name))
+            this.propertyMap.set(name, {
+                value: value,
+                readonly: this.propertyMap.get(name).readonly,
+                type: this.propertyMap.get(name).type
+            });
     };
     /**
      * public method to check if a property exist

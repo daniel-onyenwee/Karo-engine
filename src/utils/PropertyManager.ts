@@ -66,13 +66,27 @@ export default class PropertyManager {
      * @param value value to set the property with
      */
     public set(name:string, value:PropertyValueType): void {
-        if (this.propertyMap.has(name)) {
+        if (this.propertyMap.has(name) && !this.readonlyPropertySet.has(name)) {
             this.propertyMap.set(name, {
                 value: value,
                 readonly: (this.propertyMap.get(name) as PropertyOption).readonly,
                 type: (this.propertyMap.get(name) as PropertyOption).type
             })
         }
+    }
+
+    /**
+     * public method to override the value of a readonly property
+     * @param name name name of the property to override
+     * @param value value to override the property with
+     */
+    public override(name:string, value:PropertyValueType): void {
+        if (this.readonlyPropertySet.has(name))
+            this.propertyMap.set(name, {
+                value: value,
+                readonly: (this.propertyMap.get(name) as PropertyOption).readonly,
+                type: (this.propertyMap.get(name) as PropertyOption).type
+            })
     }
 
     /**
