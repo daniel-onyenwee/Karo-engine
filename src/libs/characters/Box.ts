@@ -40,7 +40,7 @@ export default class Box extends Container {
             "shadow offset": propertyOption["shadow offset"] != undefined ? propertyOption["shadow offset"] : new Vector2(0, 0),
             "shadow blur": propertyOption["shadow blur"] != undefined ? propertyOption["shadow blur"] : 0,
             "line width": propertyOption["line width"] != undefined ? propertyOption["line width"] : 1,
-            color: propertyOption.color != undefined ? propertyOption.color : new Color(0,0,0,0),
+            color: propertyOption.color != undefined ? propertyOption.color : new Color(0, 0, 0, 1),
             "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new Color(0,0,0,0)
         })
     }
@@ -57,7 +57,7 @@ export default class Box extends Container {
             this.displayPosition = displayPosition.add((this.get("position") as Vector2))
             this.displayScale = displayScale.multiply((this.get("scale") as Vector2))
             this.displayRotation = displayRotation + (this.get("rotation") as number)
-
+            
             graphics.save()
             graphics.translate(this.displayPosition.x, this.displayPosition.y)
             graphics.rotate(this.displayRotation * Math.PI/180)

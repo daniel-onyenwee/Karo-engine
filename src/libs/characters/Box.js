@@ -42,7 +42,7 @@ var Box = /** @class */ (function (_super) {
             "shadow offset": propertyOption["shadow offset"] != undefined ? propertyOption["shadow offset"] : new math_1.Vector2(0, 0),
             "shadow blur": propertyOption["shadow blur"] != undefined ? propertyOption["shadow blur"] : 0,
             "line width": propertyOption["line width"] != undefined ? propertyOption["line width"] : 1,
-            color: propertyOption.color != undefined ? propertyOption.color : new math_1.Color(0, 0, 0, 0),
+            color: propertyOption.color != undefined ? propertyOption.color : new math_1.Color(0, 0, 0, 1),
             "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new math_1.Color(0, 0, 0, 0)
         });
         return _this;

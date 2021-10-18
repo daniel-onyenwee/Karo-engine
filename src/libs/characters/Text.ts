@@ -44,7 +44,7 @@ export default class Text extends Container {
             "shadow offset": propertyOption["shadow offset"] != undefined ? propertyOption["shadow offset"] : new Vector2(0, 0),
             "shadow blur": propertyOption["shadow blur"] != undefined ? propertyOption["shadow blur"] : 0,
             "line width": propertyOption["line width"] != undefined ? propertyOption["line width"] : 1,
-            color: propertyOption.color != undefined ? propertyOption.color : new Color(0,0,0,0),
+            color: propertyOption.color != undefined ? propertyOption.color : new Color(0,0,0,1),
             "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new Color(0,0,0,0),
             "font size": propertyOption["font size"] != undefined ? propertyOption["font size"] : 16, 
             "font style": propertyOption["font style"] != undefined ? propertyOption["font style"] :  "normal",
