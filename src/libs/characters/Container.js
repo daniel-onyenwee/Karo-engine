@@ -95,6 +95,16 @@ var Container = /** @class */ (function () {
             "z index": propertyOption["z index"] != undefined ? propertyOption["z index"] : 1
         });
     }
+    Object.defineProperty(Container.prototype, "tree", {
+        /**
+         * public getter to character tree structure
+         */
+        get: function () {
+            return this.Storage.characterTree;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Container.prototype, "type", {
         /**
          * public getter to get the type of the character

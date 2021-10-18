@@ -2,7 +2,7 @@ import { Game } from ".."
 import PropertyManager from "../../utils/PropertyManager"
 import { Vector2 } from "../math"
 import * as Slim from "../../utils/slim"
-import { CharacterChildrenType, CharacterParentType } from "../../typeDecleration"
+import { CharacterParentType, CharacterTreeOption } from "../../typeDecleration"
 import DataStorage from "../../utils/DataStorage"
 
 
@@ -115,6 +115,13 @@ export default class Container {
     public has = this.Storage.has.bind(this.Storage)
 
     protected _type: string = "Container"
+
+    /**
+     * public getter to character tree structure
+     */
+    public get tree(): CharacterTreeOption  {
+        return this.Storage.characterTree
+    }
 
     /**
      * a character with no special meaning at all but used to group other characters

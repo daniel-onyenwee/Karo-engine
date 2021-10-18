@@ -5,6 +5,7 @@ import { KeyboardEventManager } from "../utils/InputEventManager"
 import Camera from "../utils/Camera"
 import DataStorage from "../utils/DataStorage"
 import PropertyManager from "../utils/PropertyManager"
+import { CharacterTreeOption } from "../typeDecleration"
 
 export interface GamePropertyOption {
     "background color"?: Color
@@ -108,6 +109,13 @@ export default class Game {
     */
     public has = this.Storage.has.bind(this.Storage)
 
+    /**
+     * public getter to character tree structure
+     */
+    public get tree(): CharacterTreeOption  {
+        return this.Storage.characterTree
+    }
+    
     private keyboardEvent:KeyboardEventManager = new KeyboardEventManager(this)
 
     /**

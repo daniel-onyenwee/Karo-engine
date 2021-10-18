@@ -124,6 +124,16 @@ var Game = /** @class */ (function () {
         this.graphic = this.canvas.getContext("2d");
         this.Updater = new Slim.Updater(this.canvas, this, this, this.Storage, this.Render);
     }
+    Object.defineProperty(Game.prototype, "tree", {
+        /**
+         * public getter to character tree structure
+         */
+        get: function () {
+            return this.Storage.characterTree;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Game.prototype, "developmentMode", {
         get: function () {
             return this._devMode;
