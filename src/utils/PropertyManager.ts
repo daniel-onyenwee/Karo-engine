@@ -6,7 +6,8 @@ type PropertyValueTypeString = "number"|"boolean"|"string"|"Vector2"|"Array<stri
 
 interface PropertyOption {
     value: PropertyValueType
-    type?: PropertyValueTypeString
+    readonly: boolean
+    type: PropertyValueTypeString
 }
 
 /**
@@ -14,6 +15,8 @@ interface PropertyOption {
  */
 export default class PropertyManager {
     private propertyMap:Map<string, PropertyOption> = new Map<string, PropertyOption>()
+
+    private readonlyPropertySet:Set<string> = new Set<string>()
 
     /**
      * set the property scheme
@@ -23,20 +26,13 @@ export default class PropertyManager {
         for (const name in propScheme) {
             let propertyValue:PropertyValueType|PropertyOption = propScheme[name]
             if (typeof propertyValue == "object" && !(propertyValue instanceof Vector2) && !(propertyValue instanceof Color)) {
-                let propertyType:PropertyValueTypeString = "string"
-                if ((propertyValue as PropertyOption).type != undefined) {
-                    propertyType = (propertyValue as PropertyOption).type as PropertyValueTypeString
-                } else {
-                    propertyType = typeof propertyValue == "number" ? "number" 
-                        : typeof propertyValue == "string" ? "string" 
-                        : typeof propertyValue == "boolean" ? "boolean"
-                        : Array.isArray(propertyValue) ? "Array<string>"
-                        : propertyValue instanceof Vector2 ? "Vector2" : "Color"
-                }
                 this.propertyMap.set(name, {
                     value: (propertyValue as PropertyOption).value,
-                    type: propertyType
+                    type: (propertyValue as PropertyOption).type,
+                    readonly: (propertyValue as PropertyOption).readonly
                 })
+                if ((propertyValue as PropertyOption).readonly == true)
+                    this.readonlyPropertySet.add(name)
             } else {
                 let propertyType:PropertyValueTypeString = typeof propertyValue == "number" ? "number" 
                 : typeof propertyValue == "string" ? "string" 
@@ -45,6 +41,7 @@ export default class PropertyManager {
                 : propertyValue instanceof Vector2 ? "Vector2" : "Color"
                 this.propertyMap.set(name, {
                     value: propertyValue,
+                    readonly: false,
                     type: propertyType
                 })
             }
@@ -72,6 +69,7 @@ export default class PropertyManager {
         if (this.propertyMap.has(name)) {
             this.propertyMap.set(name, {
                 value: value,
+                readonly: (this.propertyMap.get(name) as PropertyOption).readonly,
                 type: (this.propertyMap.get(name) as PropertyOption).type
             })
         }
@@ -96,10 +94,19 @@ export default class PropertyManager {
 
     /**
      * public method to get all the character propertries
-     * @returns return a `Map` with the property name as the map key and the property value as the map value
+     * @returns return an `Array` of type object
      */
-    public entry(): Map<string, PropertyOption> {
-        return this.propertyMap
+    public entry(): Array<{name: string, value: PropertyValueType, type: PropertyValueTypeString}> {
+        return Array
+            .from(this.propertyMap)
+            .filter(property => !property[1].readonly)
+            .map(property => {
+                return {
+                    name: property[0],
+                    value: property[1].value,
+                    type: property[1].type
+                }
+            })
     }
     
 }

@@ -7,6 +7,7 @@ var math_1 = require("../libs/math");
 var PropertyManager = /** @class */ (function () {
     function PropertyManager() {
         this.propertyMap = new Map();
+        this.readonlyPropertySet = new Set();
     }
     /**
      * set the property scheme
@@ -16,21 +17,13 @@ var PropertyManager = /** @class */ (function () {
         for (var name_1 in propScheme) {
             var propertyValue = propScheme[name_1];
             if (typeof propertyValue == "object" && !(propertyValue instanceof math_1.Vector2) && !(propertyValue instanceof math_1.Color)) {
-                var propertyType = "string";
-                if (propertyValue.type != undefined) {
-                    propertyType = propertyValue.type;
-                }
-                else {
-                    propertyType = typeof propertyValue == "number" ? "number"
-                        : typeof propertyValue == "string" ? "string"
-                            : typeof propertyValue == "boolean" ? "boolean"
-                                : Array.isArray(propertyValue) ? "Array<string>"
-                                    : propertyValue instanceof math_1.Vector2 ? "Vector2" : "Color";
-                }
                 this.propertyMap.set(name_1, {
                     value: propertyValue.value,
-                    type: propertyType
+                    type: propertyValue.type,
+                    readonly: propertyValue.readonly
                 });
+                if (propertyValue.readonly == true)
+                    this.readonlyPropertySet.add(name_1);
             }
             else {
                 var propertyType = typeof propertyValue == "number" ? "number"
@@ -40,6 +33,7 @@ var PropertyManager = /** @class */ (function () {
                                 : propertyValue instanceof math_1.Vector2 ? "Vector2" : "Color";
                 this.propertyMap.set(name_1, {
                     value: propertyValue,
+                    readonly: false,
                     type: propertyType
                 });
             }
@@ -65,6 +59,7 @@ var PropertyManager = /** @class */ (function () {
         if (this.propertyMap.has(name)) {
             this.propertyMap.set(name, {
                 value: value,
+                readonly: this.propertyMap.get(name).readonly,
                 type: this.propertyMap.get(name).type
             });
         }
@@ -86,10 +81,19 @@ var PropertyManager = /** @class */ (function () {
     };
     /**
      * public method to get all the character propertries
-     * @returns return a `Map` with the property name as the map key and the property value as the map value
+     * @returns return an `Array` of type object
      */
     PropertyManager.prototype.entry = function () {
-        return this.propertyMap;
+        return Array
+            .from(this.propertyMap)
+            .filter(function (property) { return !property[1].readonly; })
+            .map(function (property) {
+            return {
+                name: property[0],
+                value: property[1].value,
+                type: property[1].type
+            };
+        });
     };
     return PropertyManager;
 }());
