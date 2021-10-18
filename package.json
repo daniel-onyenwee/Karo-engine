@@ -1,6 +1,6 @@
 {
   "name": "karo-engine",
-  "version": "0.0.1-beta",
+  "version": "0.0.2-beta",
   "description": "a simple game engine for the karo project",
   "main": "src/index.js",
   "scripts": {
