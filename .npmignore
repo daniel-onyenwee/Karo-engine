@@ -133,3 +133,4 @@ production.config.js
 config.gypi
 CVS
 npm-debug.log
+test
