@@ -38,7 +38,7 @@ var Image = /** @class */ (function (_super) {
         _this.currentIndex = 0;
         _this._type = "Image";
         _this.propertyManager.scheme({
-            source: propertyOption.source != undefined ? propertyOption.source : Array(),
+            source: propertyOption.source != undefined ? { type: "Array<string>", readonly: false, value: propertyOption.source } : { type: "Array<string>", readonly: false, value: Array() },
             rate: propertyOption.rate != undefined ? propertyOption.rate : 1,
             height: propertyOption.height != undefined ? propertyOption.height : 40,
             width: propertyOption.width != undefined ? propertyOption.width : 40,

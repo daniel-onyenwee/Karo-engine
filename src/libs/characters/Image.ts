@@ -39,7 +39,7 @@ export default class Image extends Container {
 
         
         this.propertyManager.scheme({
-            source: propertyOption.source != undefined ? propertyOption.source : Array<string>(),
+            source: propertyOption.source != undefined ? { type: "Array<string>", readonly: false, value: propertyOption.source } : { type: "Array<string>", readonly: false, value: Array<string>() },
             rate: propertyOption.rate != undefined ? propertyOption.rate : 1,
             height: propertyOption.height != undefined ? propertyOption.height : 40,
             width: propertyOption.width != undefined ? propertyOption.width : 40,
