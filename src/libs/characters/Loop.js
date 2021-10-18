@@ -14,10 +14,14 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var _1 = require(".");
@@ -51,7 +55,7 @@ var Loop = /** @class */ (function (_super) {
     Loop.prototype.update = function (dt) {
         if (this.get("is initalize") && !this.get("is destroyed")) {
             if (this.get("play") == true) {
-                __spreadArray([], Array.from(Array(this.get("time")).keys())).forEach(function (i) {
+                __spreadArray([], Array.from(Array(this.get("time")).keys()), true).forEach(function (i) {
                     i = i + 1;
                 });
                 this.set("play", false);

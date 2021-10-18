@@ -1,9 +1,21 @@
 import * as Slim from "../utils/slim"
-import { Vector2 } from "./math"
+import { Color, Vector2 } from "./math"
 import AssetsLoader from "../utils/AssetLoader"
 import { KeyboardEventManager } from "../utils/InputEventManager"
 import Camera from "../utils/Camera"
 import DataStorage from "../utils/DataStorage"
+import PropertyManager from "../utils/PropertyManager"
+
+export interface GamePropertyOption {
+    "background color"?: Color
+    author?: string
+    version?: string
+    description?: string
+    icon?: string
+    name?: string
+    canvas: HTMLCanvasElement
+}
+
 export default class Game {
     private canvas:HTMLCanvasElement
 
@@ -24,6 +36,22 @@ export default class Game {
     private Updater:Slim.Updater
 
     protected dataStorage:DataStorage =  new DataStorage(this)
+
+    protected propertyManager:PropertyManager = new PropertyManager()
+
+    /**
+     * public method to set a property
+     * @param name name name of the property to set
+     * @param value value to set the property with
+     */
+    public set = this.propertyManager.set.bind(this.propertyManager)
+
+    /**
+     * public method to get a property
+     * @param name name name of the property to get
+     * @returns if property exist return it value else return `null`
+     */
+    public get = this.propertyManager.get.bind(this.propertyManager)
 
     public store = this.dataStorage.dataMap
 
@@ -106,11 +134,26 @@ export default class Game {
     }
 
     /**
-     * create a game
-     * @param canvas instance of the `HTMLCanvasElement` to draw the game on
+     * public getter to get the type of the character
      */
-    constructor(canvas:HTMLCanvasElement) {
-        this.canvas = canvas
+     public get type(): string { 
+        return "Game"
+    }
+
+    /**
+     * a javascript class to create the karo engine game object
+     * @param propertyOption property of game class
+     */
+    constructor(propertyOption:GamePropertyOption) {
+        this.propertyManager.scheme({
+            "background color": propertyOption["background color"] != undefined ? propertyOption["background color"] : new Color(255, 255, 255, 1),
+            name: propertyOption.name != undefined ? propertyOption.name : "New Game",
+            author: propertyOption.author != undefined ? propertyOption.author : "Quality Builder",
+            description: propertyOption.description != undefined ? propertyOption.description : String(),
+            version: propertyOption.version != undefined ? propertyOption.version : "1.0.0",
+            icon: propertyOption.icon != undefined ? propertyOption.icon : String()
+        })
+        this.canvas = propertyOption.canvas
         this.graphic = this.canvas.getContext("2d") as CanvasRenderingContext2D
         this.Updater = new Slim.Updater(this.canvas, this, this, this.Storage, this.Render)
     }
@@ -122,6 +165,7 @@ export default class Game {
     public draw(time:number) {
         let dt = (time - this.oldTime)/1000
         this.oldTime = time
+        this.canvas.style.backgroundColor = (this.get("background color") as Color).toString()
         this.assetsLoader.isAssetsLoaded()
         .then(() => {
             this.graphic.clearRect(0, 0, this.canvas.width, this.canvas.height)

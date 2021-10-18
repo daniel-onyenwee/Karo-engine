@@ -56,12 +56,13 @@ var AssetLoader_1 = __importDefault(__webpack_require__(/*! ../utils/AssetLoader
 var InputEventManager_1 = __webpack_require__(/*! ../utils/InputEventManager */ "./src/utils/InputEventManager/index.ts");
 var Camera_1 = __importDefault(__webpack_require__(/*! ../utils/Camera */ "./src/utils/Camera.ts"));
 var DataStorage_1 = __importDefault(__webpack_require__(/*! ../utils/DataStorage */ "./src/utils/DataStorage.ts"));
+var PropertyManager_1 = __importDefault(__webpack_require__(/*! ../utils/PropertyManager */ "./src/utils/PropertyManager.ts"));
 var Game = /** @class */ (function () {
     /**
-     * create a game
-     * @param canvas instance of the `HTMLCanvasElement` to draw the game on
+     * a javascript class to create the karo engine game object
+     * @param propertyOption property of game class
      */
-    function Game(canvas) {
+    function Game(propertyOption) {
         this.oldTime = 0;
         this.assetsLoader = new AssetLoader_1.default();
         this._devMode = "on";
@@ -69,6 +70,19 @@ var Game = /** @class */ (function () {
         this.Storage = new Slim.Storage(this);
         this.camera = new Camera_1.default(this);
         this.dataStorage = new DataStorage_1.default(this);
+        this.propertyManager = new PropertyManager_1.default();
+        /**
+         * public method to set a property
+         * @param name name name of the property to set
+         * @param value value to set the property with
+         */
+        this.set = this.propertyManager.set.bind(this.propertyManager);
+        /**
+         * public method to get a property
+         * @param name name name of the property to get
+         * @returns if property exist return it value else return `null`
+         */
+        this.get = this.propertyManager.get.bind(this.propertyManager);
         this.store = this.dataStorage.dataMap;
         /**
          * public method to get a reference of a child character data store
@@ -126,7 +140,15 @@ var Game = /** @class */ (function () {
          * @param keyCombination the key combination to remove
          */
         this.unregister = this.keyboardEvent.unregister.bind(this.keyboardEvent);
-        this.canvas = canvas;
+        this.propertyManager.scheme({
+            "background color": propertyOption["background color"] != undefined ? propertyOption["background color"] : new math_1.Color(255, 255, 255, 1),
+            name: propertyOption.name != undefined ? propertyOption.name : "New Game",
+            author: propertyOption.author != undefined ? propertyOption.author : "Quality Builder",
+            description: propertyOption.description != undefined ? propertyOption.description : String(),
+            version: propertyOption.version != undefined ? propertyOption.version : "1.0.0",
+            icon: propertyOption.icon != undefined ? propertyOption.icon : String()
+        });
+        this.canvas = propertyOption.canvas;
         this.graphic = this.canvas.getContext("2d");
         this.Updater = new Slim.Updater(this.canvas, this, this, this.Storage, this.Render);
     }
@@ -143,6 +165,16 @@ var Game = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Game.prototype, "type", {
+        /**
+         * public getter to get the type of the character
+         */
+        get: function () {
+            return "Game";
+        },
+        enumerable: false,
+        configurable: true
+    });
     /**
      * public method to draw the game
      * @param time number of second since the browser was last rendered
@@ -151,6 +183,7 @@ var Game = /** @class */ (function () {
         var _this = this;
         var dt = (time - this.oldTime) / 1000;
         this.oldTime = time;
+        this.canvas.style.backgroundColor = this.get("background color").toString();
         this.assetsLoader.isAssetsLoaded()
             .then(function () {
             _this.graphic.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
@@ -220,7 +253,6 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var _1 = __webpack_require__(/*! . */ "./src/libs/characters/index.ts");
 var __1 = __webpack_require__(/*! .. */ "./src/libs/index.ts");
-var utils_1 = __webpack_require__(/*! ../utils */ "./src/libs/utils/index.ts");
 var math_1 = __webpack_require__(/*! ../math */ "./src/libs/math/index.ts");
 var Arc = /** @class */ (function (_super) {
     __extends(Arc, _super);
@@ -245,9 +277,9 @@ var Arc = /** @class */ (function (_super) {
             "shadow blur": propertyOption["shadow blur"] != undefined ? propertyOption["shadow blur"] : 0,
             "line width": propertyOption["line width"] != undefined ? propertyOption["line width"] : 1,
             anticlockwise: propertyOption.anticlockwise != undefined ? propertyOption.anticlockwise : false,
-            color: propertyOption.color != undefined ? propertyOption.color : new utils_1.Color(0, 0, 0, 1),
+            color: propertyOption.color != undefined ? propertyOption.color : new math_1.Color(0, 0, 0, 1),
             radius: propertyOption.radius != undefined ? propertyOption.radius : 10,
-            "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new utils_1.Color(0, 0, 0, 0),
+            "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new math_1.Color(0, 0, 0, 0),
             "start angle": propertyOption["start angle"] != undefined ? propertyOption["start angle"] : 0,
             "end angle": propertyOption["end angle"] != undefined ? propertyOption["end angle"] : 360,
         });
@@ -323,7 +355,6 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var _1 = __webpack_require__(/*! . */ "./src/libs/characters/index.ts");
 var __1 = __webpack_require__(/*! .. */ "./src/libs/index.ts");
-var utils_1 = __webpack_require__(/*! ../utils */ "./src/libs/utils/index.ts");
 var math_1 = __webpack_require__(/*! ../math */ "./src/libs/math/index.ts");
 var Box = /** @class */ (function (_super) {
     __extends(Box, _super);
@@ -349,8 +380,8 @@ var Box = /** @class */ (function (_super) {
             "shadow offset": propertyOption["shadow offset"] != undefined ? propertyOption["shadow offset"] : new math_1.Vector2(0, 0),
             "shadow blur": propertyOption["shadow blur"] != undefined ? propertyOption["shadow blur"] : 0,
             "line width": propertyOption["line width"] != undefined ? propertyOption["line width"] : 1,
-            color: propertyOption.color != undefined ? propertyOption.color : new utils_1.Color(0, 0, 0, 0),
-            "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new utils_1.Color(0, 0, 0, 0)
+            color: propertyOption.color != undefined ? propertyOption.color : new math_1.Color(0, 0, 0, 0),
+            "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new math_1.Color(0, 0, 0, 0)
         });
         return _this;
     }
@@ -590,6 +621,11 @@ var Container = /** @class */ (function () {
          */
         this.add = this.Storage.add.bind(this.Storage);
         /**
+         * public method to get all the character propertries
+         * @returns return a `Map` with the property name as the map key and the property value as the map value
+         */
+        this.entry = this.propertyManager.entry.bind(this.propertyManager);
+        /**
          * public method to get a character
          * @param path character path (e.g `character/character_child`)
          * @returns return the character instance if the character exist else return `null`
@@ -727,7 +763,6 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var _1 = __webpack_require__(/*! . */ "./src/libs/characters/index.ts");
 var __1 = __webpack_require__(/*! .. */ "./src/libs/index.ts");
-var utils_1 = __webpack_require__(/*! ../utils */ "./src/libs/utils/index.ts");
 var math_1 = __webpack_require__(/*! ../math */ "./src/libs/math/index.ts");
 var Image = /** @class */ (function (_super) {
     __extends(Image, _super);
@@ -756,7 +791,7 @@ var Image = /** @class */ (function (_super) {
             "shadow offset": propertyOption["shadow offset"] != undefined ? propertyOption["shadow offset"] : new math_1.Vector2(0, 0),
             "shadow blur": propertyOption["shadow blur"] != undefined ? propertyOption["shadow blur"] : 0,
             "line width": propertyOption["line width"] != undefined ? propertyOption["line width"] : 1,
-            "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new utils_1.Color(0, 0, 0, 0),
+            "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new math_1.Color(0, 0, 0, 0),
         });
         return _this;
     }
@@ -1054,7 +1089,6 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var _1 = __webpack_require__(/*! . */ "./src/libs/characters/index.ts");
 var __1 = __webpack_require__(/*! .. */ "./src/libs/index.ts");
-var utils_1 = __webpack_require__(/*! ../utils */ "./src/libs/utils/index.ts");
 var math_1 = __webpack_require__(/*! ../math */ "./src/libs/math/index.ts");
 var Text = /** @class */ (function (_super) {
     __extends(Text, _super);
@@ -1078,8 +1112,8 @@ var Text = /** @class */ (function (_super) {
             "shadow offset": propertyOption["shadow offset"] != undefined ? propertyOption["shadow offset"] : new math_1.Vector2(0, 0),
             "shadow blur": propertyOption["shadow blur"] != undefined ? propertyOption["shadow blur"] : 0,
             "line width": propertyOption["line width"] != undefined ? propertyOption["line width"] : 1,
-            color: propertyOption.color != undefined ? propertyOption.color : new utils_1.Color(0, 0, 0, 0),
-            "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new utils_1.Color(0, 0, 0, 0),
+            color: propertyOption.color != undefined ? propertyOption.color : new math_1.Color(0, 0, 0, 0),
+            "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new math_1.Color(0, 0, 0, 0),
             "font size": propertyOption["font size"] != undefined ? propertyOption["font size"] : 16,
             "font style": propertyOption["font style"] != undefined ? propertyOption["font style"] : "normal",
             "font variant": propertyOption["font variant"] != undefined ? propertyOption["font variant"] : "normal",
@@ -1291,15 +1325,88 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Utils = exports.Math = exports.Character = exports.Game = void 0;
+exports.Math = exports.Character = exports.Game = void 0;
 var Game_1 = __importDefault(__webpack_require__(/*! ./Game */ "./src/libs/Game.ts"));
 exports.Game = Game_1.default;
 var Character = __importStar(__webpack_require__(/*! ./characters */ "./src/libs/characters/index.ts"));
 exports.Character = Character;
 var Math = __importStar(__webpack_require__(/*! ./math */ "./src/libs/math/index.ts"));
 exports.Math = Math;
-var Utils = __importStar(__webpack_require__(/*! ./utils */ "./src/libs/utils/index.ts"));
-exports.Utils = Utils;
+
+
+/***/ }),
+
+/***/ "./src/libs/math/Color.ts":
+/*!********************************!*\
+  !*** ./src/libs/math/Color.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Color = /** @class */ (function () {
+    /**
+     * 🛠 utility to class to handle color related issues
+     * @param red the saturation of red in the color
+     * @param green the saturation of green in the color
+     * @param blue the saturation of blue in the color
+     * @param alpha the range of transparence of the color
+     */
+    function Color(red, green, blue, alpha) {
+        if (red === void 0) { red = 0; }
+        if (green === void 0) { green = 0; }
+        if (blue === void 0) { blue = 0; }
+        if (alpha === void 0) { alpha = 1; }
+        this.red = red;
+        this.blue = blue;
+        this.green = green;
+        this.alpha = alpha;
+    }
+    /**
+     * public method to convert the color to string
+     * @returns `string` format of rgba(r, g, b, a)
+     */
+    Color.prototype.toString = function () {
+        return "rgba(" + this.red + ", " + this.green + ", " + this.blue + ", " + this.alpha + ")";
+    };
+    /**
+     * public method to convert the color to a number type array
+     * @returns `Array` of 4 numeric values `[red, green, blue, alpha]`
+     */
+    Color.prototype.toArray = function () {
+        return [this.red, this.green, this.blue, this.alpha];
+    };
+    /**
+     * public method to generate `Color` from a number type array
+     * @param colorArray `Array` of 4 numeric values `[red, green, blue, alpha]`
+     * @returns `Color`
+     */
+    Color.prototype.fromArray = function (colorArray) {
+        return new Color((colorArray[0] != undefined ? colorArray[0] : 0), (colorArray[1] != undefined ? colorArray[1] : 0), (colorArray[2] != undefined ? colorArray[2] : 0), (colorArray[3] != undefined ? colorArray[3] : 1));
+    };
+    /**
+     * public method to convert the color to a `Object`
+     * @returns an `Object` of key `red`, `green`, `blue`, `alpha`
+     */
+    Color.prototype.toObject = function () {
+        return {
+            red: this.red,
+            green: this.green,
+            blue: this.blue,
+            alpha: this.alpha
+        };
+    };
+    /**
+     * public method to generate `Color` from an `Object` of key `red`, `green`, `blue`, `alpha`
+     * @param colorObject an `Object` of key `red`, `green`, `blue`, `alpha`
+     * @returns `Color`
+     */
+    Color.prototype.fromObject = function (colorObject) {
+        return new Color(colorObject.red, colorObject.green, colorObject.blue, colorObject.alpha);
+    };
+    return Color;
+}());
+exports["default"] = Color;
 
 
 /***/ }),
@@ -1604,7 +1711,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ceil = exports.abs = exports.random = exports.expm1 = exports.exp = exports.LOG10E = exports.LN2 = exports.LN10 = exports.LOG2E = exports.SQRT2 = exports.SQRT1_2 = exports.E = exports.PI = exports.Vector2 = void 0;
+exports.ceil = exports.abs = exports.random = exports.expm1 = exports.exp = exports.LOG10E = exports.LN2 = exports.LN10 = exports.LOG2E = exports.SQRT2 = exports.SQRT1_2 = exports.E = exports.PI = exports.Color = exports.Vector2 = void 0;
+var Color_1 = __importDefault(__webpack_require__(/*! ./Color */ "./src/libs/math/Color.ts"));
+exports.Color = Color_1.default;
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/libs/math/constants.ts");
 Object.defineProperty(exports, "PI", ({ enumerable: true, get: function () { return constants_1.PI; } }));
 Object.defineProperty(exports, "E", ({ enumerable: true, get: function () { return constants_1.E; } }));
@@ -1622,99 +1731,6 @@ Object.defineProperty(exports, "abs", ({ enumerable: true, get: function () { re
 Object.defineProperty(exports, "ceil", ({ enumerable: true, get: function () { return functions_1.ceil; } }));
 var Vector2_1 = __importDefault(__webpack_require__(/*! ./Vector2 */ "./src/libs/math/Vector2.ts"));
 exports.Vector2 = Vector2_1.default;
-
-
-/***/ }),
-
-/***/ "./src/libs/utils/Color.ts":
-/*!*********************************!*\
-  !*** ./src/libs/utils/Color.ts ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-var Color = /** @class */ (function () {
-    /**
-     * 🛠 utility to class to handle color related issues
-     * @param red the saturation of red in the color
-     * @param green the saturation of green in the color
-     * @param blue the saturation of blue in the color
-     * @param alpha the range of transparence of the color
-     */
-    function Color(red, green, blue, alpha) {
-        if (red === void 0) { red = 0; }
-        if (green === void 0) { green = 0; }
-        if (blue === void 0) { blue = 0; }
-        if (alpha === void 0) { alpha = 1; }
-        this.red = red;
-        this.blue = blue;
-        this.green = green;
-        this.alpha = alpha;
-    }
-    /**
-     * public method to convert the color to string
-     * @returns `string` format of rgba(r, g, b, a)
-     */
-    Color.prototype.toString = function () {
-        return "rgba(" + this.red + ", " + this.green + ", " + this.blue + ", " + this.alpha + ")";
-    };
-    /**
-     * public method to convert the color to a number type array
-     * @returns `Array` of 4 numeric values `[red, green, blue, alpha]`
-     */
-    Color.prototype.toArray = function () {
-        return [this.red, this.green, this.blue, this.alpha];
-    };
-    /**
-     * public method to generate `Color` from a number type array
-     * @param colorArray `Array` of 4 numeric values `[red, green, blue, alpha]`
-     * @returns `Color`
-     */
-    Color.prototype.fromArray = function (colorArray) {
-        return new Color((colorArray[0] != undefined ? colorArray[0] : 0), (colorArray[1] != undefined ? colorArray[1] : 0), (colorArray[2] != undefined ? colorArray[2] : 0), (colorArray[3] != undefined ? colorArray[3] : 1));
-    };
-    /**
-     * public method to convert the color to a `Object`
-     * @returns an `Object` of key `red`, `green`, `blue`, `alpha`
-     */
-    Color.prototype.toObject = function () {
-        return {
-            red: this.red,
-            green: this.green,
-            blue: this.blue,
-            alpha: this.alpha
-        };
-    };
-    /**
-     * public method to generate `Color` from an `Object` of key `red`, `green`, `blue`, `alpha`
-     * @param colorObject an `Object` of key `red`, `green`, `blue`, `alpha`
-     * @returns `Color`
-     */
-    Color.prototype.fromObject = function (colorObject) {
-        return new Color(colorObject.red, colorObject.green, colorObject.blue, colorObject.alpha);
-    };
-    return Color;
-}());
-exports["default"] = Color;
-
-
-/***/ }),
-
-/***/ "./src/libs/utils/index.ts":
-/*!*********************************!*\
-  !*** ./src/libs/utils/index.ts ***!
-  \*********************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Color = void 0;
-var Color_1 = __importDefault(__webpack_require__(/*! ./Color */ "./src/libs/utils/Color.ts"));
-exports.Color = Color_1.default;
 
 
 /***/ }),
@@ -2121,10 +2137,11 @@ exports.KeyboardEventManager = KeyboardEventManager_1.default;
 /*!**************************************!*\
   !*** ./src/utils/PropertyManager.ts ***!
   \**************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+var math_1 = __webpack_require__(/*! ../libs/math */ "./src/libs/math/index.ts");
 /**
  * 🛠 utility class to handle the character property
  */
@@ -2138,7 +2155,35 @@ var PropertyManager = /** @class */ (function () {
      */
     PropertyManager.prototype.scheme = function (propScheme) {
         for (var name_1 in propScheme) {
-            this.propertyMap.set(name_1, propScheme[name_1]);
+            var propertyValue = propScheme[name_1];
+            if (typeof propertyValue == "object" && !(propertyValue instanceof math_1.Vector2) && !(propertyValue instanceof math_1.Color)) {
+                var propertyType = "string";
+                if (propertyValue.type != undefined) {
+                    propertyType = propertyValue.type;
+                }
+                else {
+                    propertyType = typeof propertyValue == "number" ? "number"
+                        : typeof propertyValue == "string" ? "string"
+                            : typeof propertyValue == "boolean" ? "boolean"
+                                : Array.isArray(propertyValue) ? "Array<string>"
+                                    : propertyValue instanceof math_1.Vector2 ? "Vector2" : "Color";
+                }
+                this.propertyMap.set(name_1, {
+                    value: propertyValue.value,
+                    type: propertyType
+                });
+            }
+            else {
+                var propertyType = typeof propertyValue == "number" ? "number"
+                    : typeof propertyValue == "string" ? "string"
+                        : typeof propertyValue == "boolean" ? "boolean"
+                            : Array.isArray(propertyValue) ? "Array<string>"
+                                : propertyValue instanceof math_1.Vector2 ? "Vector2" : "Color";
+                this.propertyMap.set(name_1, {
+                    value: propertyValue,
+                    type: propertyType
+                });
+            }
         }
     };
     /**
@@ -2148,7 +2193,7 @@ var PropertyManager = /** @class */ (function () {
      */
     PropertyManager.prototype.get = function (name) {
         if (this.propertyMap.has(name))
-            return this.propertyMap.get(name);
+            return this.propertyMap.get(name).value;
         else
             return null;
     };
@@ -2158,8 +2203,12 @@ var PropertyManager = /** @class */ (function () {
      * @param value value to set the property with
      */
     PropertyManager.prototype.set = function (name, value) {
-        if (this.propertyMap.has(name))
-            this.propertyMap.set(name, value);
+        if (this.propertyMap.has(name)) {
+            this.propertyMap.set(name, {
+                value: value,
+                type: this.propertyMap.get(name).type
+            });
+        }
     };
     /**
      * public method to check if a property exist
@@ -2175,6 +2224,13 @@ var PropertyManager = /** @class */ (function () {
      */
     PropertyManager.prototype.delete = function (name) {
         this.propertyMap.delete(name);
+    };
+    /**
+     * public method to get all the character propertries
+     * @returns return a `Map` with the property name as the map key and the property value as the map value
+     */
+    PropertyManager.prototype.entry = function () {
+        return this.propertyMap;
     };
     return PropertyManager;
 }());

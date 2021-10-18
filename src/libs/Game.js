@@ -28,12 +28,13 @@ var AssetLoader_1 = __importDefault(require("../utils/AssetLoader"));
 var InputEventManager_1 = require("../utils/InputEventManager");
 var Camera_1 = __importDefault(require("../utils/Camera"));
 var DataStorage_1 = __importDefault(require("../utils/DataStorage"));
+var PropertyManager_1 = __importDefault(require("../utils/PropertyManager"));
 var Game = /** @class */ (function () {
     /**
-     * create a game
-     * @param canvas instance of the `HTMLCanvasElement` to draw the game on
+     * a javascript class to create the karo engine game object
+     * @param propertyOption property of game class
      */
-    function Game(canvas) {
+    function Game(propertyOption) {
         this.oldTime = 0;
         this.assetsLoader = new AssetLoader_1.default();
         this._devMode = "on";
@@ -41,6 +42,19 @@ var Game = /** @class */ (function () {
         this.Storage = new Slim.Storage(this);
         this.camera = new Camera_1.default(this);
         this.dataStorage = new DataStorage_1.default(this);
+        this.propertyManager = new PropertyManager_1.default();
+        /**
+         * public method to set a property
+         * @param name name name of the property to set
+         * @param value value to set the property with
+         */
+        this.set = this.propertyManager.set.bind(this.propertyManager);
+        /**
+         * public method to get a property
+         * @param name name name of the property to get
+         * @returns if property exist return it value else return `null`
+         */
+        this.get = this.propertyManager.get.bind(this.propertyManager);
         this.store = this.dataStorage.dataMap;
         /**
          * public method to get a reference of a child character data store
@@ -98,7 +112,15 @@ var Game = /** @class */ (function () {
          * @param keyCombination the key combination to remove
          */
         this.unregister = this.keyboardEvent.unregister.bind(this.keyboardEvent);
-        this.canvas = canvas;
+        this.propertyManager.scheme({
+            "background color": propertyOption["background color"] != undefined ? propertyOption["background color"] : new math_1.Color(255, 255, 255, 1),
+            name: propertyOption.name != undefined ? propertyOption.name : "New Game",
+            author: propertyOption.author != undefined ? propertyOption.author : "Quality Builder",
+            description: propertyOption.description != undefined ? propertyOption.description : String(),
+            version: propertyOption.version != undefined ? propertyOption.version : "1.0.0",
+            icon: propertyOption.icon != undefined ? propertyOption.icon : String()
+        });
+        this.canvas = propertyOption.canvas;
         this.graphic = this.canvas.getContext("2d");
         this.Updater = new Slim.Updater(this.canvas, this, this, this.Storage, this.Render);
     }
@@ -115,6 +137,16 @@ var Game = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(Game.prototype, "type", {
+        /**
+         * public getter to get the type of the character
+         */
+        get: function () {
+            return "Game";
+        },
+        enumerable: false,
+        configurable: true
+    });
     /**
      * public method to draw the game
      * @param time number of second since the browser was last rendered
@@ -123,6 +155,7 @@ var Game = /** @class */ (function () {
         var _this = this;
         var dt = (time - this.oldTime) / 1000;
         this.oldTime = time;
+        this.canvas.style.backgroundColor = this.get("background color").toString();
         this.assetsLoader.isAssetsLoaded()
             .then(function () {
             _this.graphic.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
