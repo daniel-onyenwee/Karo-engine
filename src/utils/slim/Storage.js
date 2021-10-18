@@ -10,6 +10,16 @@ var Storage = /** @class */ (function () {
         this.predefineCharacterList = Array();
         this.character = character;
     }
+    Object.defineProperty(Storage.prototype, "characterTree", {
+        get: function () {
+            return this._characterTree;
+        },
+        set: function (tree) {
+            this._characterTree = tree;
+        },
+        enumerable: false,
+        configurable: true
+    });
     /**
      * public method to list all the charcter children
      * @returns `Array` containing all the instance of the character children

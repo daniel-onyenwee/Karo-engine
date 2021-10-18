@@ -1,10 +1,24 @@
-import { CharacterChildrenType, CharacterParentType } from "../../typeDecleration"
+import { 
+    CharacterChildrenType, 
+    CharacterParentType, 
+    CharacterTreeOption 
+} from "../../typeDecleration"
 export default class Storage {
     private storageMap:Map<string, CharacterChildrenType> = new Map<string, CharacterChildrenType>()
 
     private predefineCharacterList:Array<CharacterChildrenType> = Array<CharacterChildrenType>()
 
     private character:CharacterParentType
+
+    private _characterTree!:CharacterTreeOption
+    
+    public set characterTree(tree:CharacterTreeOption) {
+        this._characterTree = tree
+    }
+
+    public get characterTree(): CharacterTreeOption {
+        return this._characterTree
+    }
 
     /**
      * 🛠 utility class to handle the storage of a character children
