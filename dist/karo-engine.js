@@ -152,6 +152,16 @@ var Game = /** @class */ (function () {
         this.graphic = this.canvas.getContext("2d");
         this.Updater = new Slim.Updater(this.canvas, this, this, this.Storage, this.Render);
     }
+    Object.defineProperty(Game.prototype, "tree", {
+        /**
+         * public getter to character tree structure
+         */
+        get: function () {
+            return this.Storage.characterTree;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Game.prototype, "developmentMode", {
         get: function () {
             return this._devMode;
@@ -658,6 +668,16 @@ var Container = /** @class */ (function () {
             "z index": propertyOption["z index"] != undefined ? propertyOption["z index"] : 1
         });
     }
+    Object.defineProperty(Container.prototype, "tree", {
+        /**
+         * public getter to character tree structure
+         */
+        get: function () {
+            return this.Storage.characterTree;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Container.prototype, "type", {
         /**
          * public getter to get the type of the character
@@ -2320,6 +2340,16 @@ var Storage = /** @class */ (function () {
         this.predefineCharacterList = Array();
         this.character = character;
     }
+    Object.defineProperty(Storage.prototype, "characterTree", {
+        get: function () {
+            return this._characterTree;
+        },
+        set: function (tree) {
+            this._characterTree = tree;
+        },
+        enumerable: false,
+        configurable: true
+    });
     /**
      * public method to list all the charcter children
      * @returns `Array` containing all the instance of the character children
@@ -2483,6 +2513,12 @@ var Updater = /** @class */ (function () {
         });
         predefineCharacterList.length = 0;
         this.storage.clear();
+        this.storage.characterTree = {
+            name: this.character.get("name"),
+            type: this.character.type,
+            path: this.character.get("path"),
+            children: new Map()
+        };
         characterList.forEach(function (character) {
             if (!character.get("is destroyed")) {
                 var path = String();
@@ -2494,6 +2530,7 @@ var Updater = /** @class */ (function () {
                 character.update(dt);
                 _this.storage.nativeAdd(character);
                 _this.render.add(character.get("z index"), character);
+                _this.storage.characterTree.children.set(character.get("name"), character.tree);
             }
         });
     };
