@@ -390,7 +390,7 @@ var Box = /** @class */ (function (_super) {
             "shadow offset": propertyOption["shadow offset"] != undefined ? propertyOption["shadow offset"] : new math_1.Vector2(0, 0),
             "shadow blur": propertyOption["shadow blur"] != undefined ? propertyOption["shadow blur"] : 0,
             "line width": propertyOption["line width"] != undefined ? propertyOption["line width"] : 1,
-            color: propertyOption.color != undefined ? propertyOption.color : new math_1.Color(0, 0, 0, 0),
+            color: propertyOption.color != undefined ? propertyOption.color : new math_1.Color(0, 0, 0, 1),
             "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new math_1.Color(0, 0, 0, 0)
         });
         return _this;
@@ -657,8 +657,8 @@ var Container = /** @class */ (function () {
         this._type = "Container";
         this.propertyManager.scheme({
             name: propertyOption.name,
-            "is destroyed": false,
-            "is initalize": false,
+            "is destroyed": { value: false, readonly: true, type: "boolean" },
+            "is initalize": { value: false, readonly: true, type: "boolean" },
             path: String(),
             opacity: propertyOption.opacity != undefined ? propertyOption.opacity : 1,
             position: propertyOption.position != undefined ? propertyOption.position : new math_1.Vector2(0, 0),
@@ -715,17 +715,19 @@ var Container = /** @class */ (function () {
      * @param parent parnet character instance of the character
      */
     Container.prototype.initalize = function (canvas, game, parent) {
-        this._parent = parent;
-        this._game = game;
-        this.canvas = canvas;
-        this.set("is initalize", true);
-        this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render);
+        if (!this.get("is initalize")) {
+            this._parent = parent;
+            this._game = game;
+            this.canvas = canvas;
+            this.propertyManager.override("is initalize", true);
+            this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render);
+        }
     };
     /**
      * public method to destroy the character
      */
     Container.prototype.destroy = function () {
-        this.set("is destroyed", true);
+        this.propertyManager.override("is destroyed", true);
     };
     /**
      * public method to update the character
@@ -804,7 +806,7 @@ var Image = /** @class */ (function (_super) {
         _this.currentIndex = 0;
         _this._type = "Image";
         _this.propertyManager.scheme({
-            source: propertyOption.source != undefined ? propertyOption.source : Array(),
+            source: propertyOption.source != undefined ? { type: "Array<string>", readonly: false, value: propertyOption.source } : { type: "Array<string>", readonly: false, value: Array() },
             rate: propertyOption.rate != undefined ? propertyOption.rate : 1,
             height: propertyOption.height != undefined ? propertyOption.height : 40,
             width: propertyOption.width != undefined ? propertyOption.width : 40,
@@ -1132,7 +1134,7 @@ var Text = /** @class */ (function (_super) {
             "shadow offset": propertyOption["shadow offset"] != undefined ? propertyOption["shadow offset"] : new math_1.Vector2(0, 0),
             "shadow blur": propertyOption["shadow blur"] != undefined ? propertyOption["shadow blur"] : 0,
             "line width": propertyOption["line width"] != undefined ? propertyOption["line width"] : 1,
-            color: propertyOption.color != undefined ? propertyOption.color : new math_1.Color(0, 0, 0, 0),
+            color: propertyOption.color != undefined ? propertyOption.color : new math_1.Color(0, 0, 0, 1),
             "shadow color": propertyOption["shadow color"] != undefined ? propertyOption["shadow color"] : new math_1.Color(0, 0, 0, 0),
             "font size": propertyOption["font size"] != undefined ? propertyOption["font size"] : 16,
             "font style": propertyOption["font style"] != undefined ? propertyOption["font style"] : "normal",
@@ -2168,6 +2170,7 @@ var math_1 = __webpack_require__(/*! ../libs/math */ "./src/libs/math/index.ts")
 var PropertyManager = /** @class */ (function () {
     function PropertyManager() {
         this.propertyMap = new Map();
+        this.readonlyPropertySet = new Set();
     }
     /**
      * set the property scheme
@@ -2177,21 +2180,13 @@ var PropertyManager = /** @class */ (function () {
         for (var name_1 in propScheme) {
             var propertyValue = propScheme[name_1];
             if (typeof propertyValue == "object" && !(propertyValue instanceof math_1.Vector2) && !(propertyValue instanceof math_1.Color)) {
-                var propertyType = "string";
-                if (propertyValue.type != undefined) {
-                    propertyType = propertyValue.type;
-                }
-                else {
-                    propertyType = typeof propertyValue == "number" ? "number"
-                        : typeof propertyValue == "string" ? "string"
-                            : typeof propertyValue == "boolean" ? "boolean"
-                                : Array.isArray(propertyValue) ? "Array<string>"
-                                    : propertyValue instanceof math_1.Vector2 ? "Vector2" : "Color";
-                }
                 this.propertyMap.set(name_1, {
                     value: propertyValue.value,
-                    type: propertyType
+                    type: propertyValue.type,
+                    readonly: propertyValue.readonly
                 });
+                if (propertyValue.readonly == true)
+                    this.readonlyPropertySet.add(name_1);
             }
             else {
                 var propertyType = typeof propertyValue == "number" ? "number"
@@ -2201,6 +2196,7 @@ var PropertyManager = /** @class */ (function () {
                                 : propertyValue instanceof math_1.Vector2 ? "Vector2" : "Color";
                 this.propertyMap.set(name_1, {
                     value: propertyValue,
+                    readonly: false,
                     type: propertyType
                 });
             }
@@ -2223,12 +2219,26 @@ var PropertyManager = /** @class */ (function () {
      * @param value value to set the property with
      */
     PropertyManager.prototype.set = function (name, value) {
-        if (this.propertyMap.has(name)) {
+        if (this.propertyMap.has(name) && !this.readonlyPropertySet.has(name)) {
             this.propertyMap.set(name, {
                 value: value,
+                readonly: this.propertyMap.get(name).readonly,
                 type: this.propertyMap.get(name).type
             });
         }
+    };
+    /**
+     * public method to override the value of a readonly property
+     * @param name name name of the property to override
+     * @param value value to override the property with
+     */
+    PropertyManager.prototype.override = function (name, value) {
+        if (this.readonlyPropertySet.has(name))
+            this.propertyMap.set(name, {
+                value: value,
+                readonly: this.propertyMap.get(name).readonly,
+                type: this.propertyMap.get(name).type
+            });
     };
     /**
      * public method to check if a property exist
@@ -2247,10 +2257,19 @@ var PropertyManager = /** @class */ (function () {
     };
     /**
      * public method to get all the character propertries
-     * @returns return a `Map` with the property name as the map key and the property value as the map value
+     * @returns return an `Array` of type object
      */
     PropertyManager.prototype.entry = function () {
-        return this.propertyMap;
+        return Array
+            .from(this.propertyMap)
+            .filter(function (property) { return !property[1].readonly; })
+            .map(function (property) {
+            return {
+                name: property[0],
+                value: property[1].value,
+                type: property[1].type
+            };
+        });
     };
     return PropertyManager;
 }());

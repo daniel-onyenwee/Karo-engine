@@ -130,8 +130,8 @@ export default class Container {
     constructor(propertyOption:ContainerPropertyOption) {
         this.propertyManager.scheme({
             name: propertyOption.name,
-            "is destroyed": false,
-            "is initalize": false,
+            "is destroyed": { value: false, readonly: true, type: "boolean" },
+            "is initalize": { value: false, readonly: true, type: "boolean" },
             path: String(),
             opacity: propertyOption.opacity != undefined ? propertyOption.opacity : 1,
             position: propertyOption.position != undefined ? propertyOption.position : new Vector2(0, 0),
@@ -170,18 +170,20 @@ export default class Container {
      * @param parent parnet character instance of the character
      */
     public initalize(canvas:HTMLCanvasElement, game:Game, parent:CharacterParentType) { 
-        this._parent = parent
-        this._game = game
-        this.canvas = canvas
-        this.set("is initalize", true)
-        this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render)
+        if (!this.get("is initalize")) {
+            this._parent = parent
+            this._game = game
+            this.canvas = canvas
+            this.propertyManager.override("is initalize", true)
+            this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render)
+        }
     }
  
     /**
      * public method to destroy the character
      */
     public destroy(): void {
-        this.set("is destroyed", true)
+        this.propertyManager.override("is destroyed", true)
     }
 
     /**

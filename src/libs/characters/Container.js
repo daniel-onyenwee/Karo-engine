@@ -84,8 +84,8 @@ var Container = /** @class */ (function () {
         this._type = "Container";
         this.propertyManager.scheme({
             name: propertyOption.name,
-            "is destroyed": false,
-            "is initalize": false,
+            "is destroyed": { value: false, readonly: true, type: "boolean" },
+            "is initalize": { value: false, readonly: true, type: "boolean" },
             path: String(),
             opacity: propertyOption.opacity != undefined ? propertyOption.opacity : 1,
             position: propertyOption.position != undefined ? propertyOption.position : new math_1.Vector2(0, 0),
@@ -142,17 +142,19 @@ var Container = /** @class */ (function () {
      * @param parent parnet character instance of the character
      */
     Container.prototype.initalize = function (canvas, game, parent) {
-        this._parent = parent;
-        this._game = game;
-        this.canvas = canvas;
-        this.set("is initalize", true);
-        this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render);
+        if (!this.get("is initalize")) {
+            this._parent = parent;
+            this._game = game;
+            this.canvas = canvas;
+            this.propertyManager.override("is initalize", true);
+            this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render);
+        }
     };
     /**
      * public method to destroy the character
      */
     Container.prototype.destroy = function () {
-        this.set("is destroyed", true);
+        this.propertyManager.override("is destroyed", true);
     };
     /**
      * public method to update the character
