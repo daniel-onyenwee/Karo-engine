@@ -51,6 +51,13 @@ var Game = /** @class */ (function () {
          */
         this.on = this.eventEmitter.on.bind(this.eventEmitter);
         /**
+         * public method to call an event
+         * @param event name of event to emit
+         * @param args function arguments of the event
+         * @returns return `true` if the event is emitted else return `false`
+         */
+        this.emit = this.eventEmitter.emit.bind(this.eventEmitter);
+        /**
          * public method to set a property
          * @param name name name of the property to set
          * @param value value to set the property with

@@ -93,6 +93,7 @@ var Condition = /** @class */ (function (_super) {
                 }
                 this.set("play", false);
             }
+            this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
     };

@@ -71,6 +71,8 @@ export default class Updater {
                 this.storage.nativeAdd(character)
                 this.render.add(character.get("z index") as number, character)
                 this.storage.characterTree.children.set(character.get("name") as string, character.tree)
+            } else {
+                character.emit("final")
             }
         })
 

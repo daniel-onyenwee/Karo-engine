@@ -96,7 +96,7 @@ export default class Container {
      */
     public child = this.Storage.child.bind(this.Storage)
 
-    private eventEmitter:EventEmitter = new EventEmitter(this)
+    protected eventEmitter:EventEmitter = new EventEmitter(this)
 
     /**
      * public method to set an event
@@ -104,6 +104,14 @@ export default class Container {
      * @param callback callback function to call when the event is emiited
      */
     public on = this.eventEmitter.on.bind(this.eventEmitter)
+
+    /**
+     * public method to call an event
+     * @param event name of event to emit
+     * @param args function arguments of the event
+     * @returns return `true` if the event is emitted else return `false`
+     */
+    public emit = this.eventEmitter.emit.bind(this.eventEmitter)
 
     public store:DataManager = new DataManager(this)
 
@@ -176,6 +184,7 @@ export default class Container {
             this.canvas = canvas
             this.propertyManager.override("is initalize", true)
             this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render)
+            this.eventEmitter.emit("init")
         }
     }
  
@@ -192,7 +201,7 @@ export default class Container {
      */
      public update(dt:number): void {
         if (this.get("is initalize") && !this.get("is destroyed")) {
-
+            this.eventEmitter.emit("update", dt)
             this.Updater.update(dt)
         }
     }

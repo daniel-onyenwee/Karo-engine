@@ -75,6 +75,13 @@ var Container = /** @class */ (function () {
          * @param callback callback function to call when the event is emiited
          */
         this.on = this.eventEmitter.on.bind(this.eventEmitter);
+        /**
+         * public method to call an event
+         * @param event name of event to emit
+         * @param args function arguments of the event
+         * @returns return `true` if the event is emitted else return `false`
+         */
+        this.emit = this.eventEmitter.emit.bind(this.eventEmitter);
         this.store = new DataManager_1.default(this);
         /**
          * public method to check if a character exist
@@ -149,6 +156,7 @@ var Container = /** @class */ (function () {
             this.canvas = canvas;
             this.propertyManager.override("is initalize", true);
             this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render);
+            this.eventEmitter.emit("init");
         }
     };
     /**
@@ -163,6 +171,7 @@ var Container = /** @class */ (function () {
      */
     Container.prototype.update = function (dt) {
         if (this.get("is initalize") && !this.get("is destroyed")) {
+            this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
     };

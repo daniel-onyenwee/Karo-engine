@@ -107,6 +107,7 @@ export default class Condition extends Container {
                 }
                 this.set("play", false)
             }
+            this.eventEmitter.emit("update", dt)
             this.Updater.update(dt)
         } 
 

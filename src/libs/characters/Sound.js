@@ -80,6 +80,7 @@ var Sound = /** @class */ (function (_super) {
                     this.audio.pause();
                 }
             }
+            this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
     };

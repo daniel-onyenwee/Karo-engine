@@ -68,7 +68,7 @@ export default class Timer extends Container {
                     }
                 }
             }
-
+            this.eventEmitter.emit("update", dt)
             this.Updater.update(dt)
         }
     }

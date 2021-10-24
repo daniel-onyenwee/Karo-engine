@@ -88,7 +88,7 @@ export default class Sound extends Container {
                     this.audio.pause()
                 }
             }
-
+            this.eventEmitter.emit("update", dt)
             this.Updater.update(dt)
         }
     }

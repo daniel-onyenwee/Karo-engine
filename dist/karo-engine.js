@@ -79,6 +79,13 @@ var Game = /** @class */ (function () {
          */
         this.on = this.eventEmitter.on.bind(this.eventEmitter);
         /**
+         * public method to call an event
+         * @param event name of event to emit
+         * @param args function arguments of the event
+         * @returns return `true` if the event is emitted else return `false`
+         */
+        this.emit = this.eventEmitter.emit.bind(this.eventEmitter);
+        /**
          * public method to set a property
          * @param name name name of the property to set
          * @param value value to set the property with
@@ -541,6 +548,7 @@ var Condition = /** @class */ (function (_super) {
                 }
                 this.set("play", false);
             }
+            this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
     };
@@ -649,6 +657,13 @@ var Container = /** @class */ (function () {
          * @param callback callback function to call when the event is emiited
          */
         this.on = this.eventEmitter.on.bind(this.eventEmitter);
+        /**
+         * public method to call an event
+         * @param event name of event to emit
+         * @param args function arguments of the event
+         * @returns return `true` if the event is emitted else return `false`
+         */
+        this.emit = this.eventEmitter.emit.bind(this.eventEmitter);
         this.store = new DataManager_1.default(this);
         /**
          * public method to check if a character exist
@@ -723,6 +738,7 @@ var Container = /** @class */ (function () {
             this.canvas = canvas;
             this.propertyManager.override("is initalize", true);
             this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render);
+            this.eventEmitter.emit("init");
         }
     };
     /**
@@ -737,6 +753,7 @@ var Container = /** @class */ (function () {
      */
     Container.prototype.update = function (dt) {
         if (this.get("is initalize") && !this.get("is destroyed")) {
+            this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
     };
@@ -950,6 +967,7 @@ var Loop = /** @class */ (function (_super) {
                 });
                 this.set("play", false);
             }
+            this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
     };
@@ -1063,6 +1081,7 @@ var Sound = /** @class */ (function (_super) {
                     this.audio.pause();
                 }
             }
+            this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
     };
@@ -1260,6 +1279,7 @@ var Timer = /** @class */ (function (_super) {
                     }
                 }
             }
+            this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
     };
@@ -2715,6 +2735,9 @@ var Updater = /** @class */ (function () {
                 _this.storage.nativeAdd(character);
                 _this.render.add(character.get("z index"), character);
                 _this.storage.characterTree.children.set(character.get("name"), character.tree);
+            }
+            else {
+                character.emit("final");
             }
         });
     };

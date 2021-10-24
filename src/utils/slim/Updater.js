@@ -52,6 +52,9 @@ var Updater = /** @class */ (function () {
                 _this.render.add(character.get("z index"), character);
                 _this.storage.characterTree.children.set(character.get("name"), character.tree);
             }
+            else {
+                character.emit("final");
+            }
         });
     };
     return Updater;

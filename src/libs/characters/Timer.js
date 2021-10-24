@@ -58,6 +58,7 @@ var Timer = /** @class */ (function (_super) {
                     }
                 }
             }
+            this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
     };
