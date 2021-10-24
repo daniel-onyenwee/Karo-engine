@@ -57,6 +57,7 @@ var InputEventManager_1 = __webpack_require__(/*! ../utils/InputEventManager */ 
 var Camera_1 = __importDefault(__webpack_require__(/*! ../utils/Camera */ "./src/utils/Camera.ts"));
 var PropertyManager_1 = __importDefault(__webpack_require__(/*! ../utils/PropertyManager */ "./src/utils/PropertyManager.ts"));
 var DataManager_1 = __importDefault(__webpack_require__(/*! ../utils/DataManager */ "./src/utils/DataManager.ts"));
+var EventEmitter_1 = __importDefault(__webpack_require__(/*! ../utils/EventEmitter */ "./src/utils/EventEmitter.ts"));
 var Game = /** @class */ (function () {
     /**
      * a javascript class to create the karo engine game object
@@ -70,15 +71,19 @@ var Game = /** @class */ (function () {
         this.Storage = new Slim.Storage(this);
         this.camera = new Camera_1.default(this);
         this.propertyManager = new PropertyManager_1.default();
+        this.eventEmitter = new EventEmitter_1.default(this);
+        /**
+         * public method to set an event
+         * @param event name of event to add
+         * @param callback callback function to call when the event is emiited
+         */
+        this.on = this.eventEmitter.on.bind(this.eventEmitter);
         /**
          * public method to set a property
          * @param name name name of the property to set
          * @param value value to set the property with
          */
         this.set = this.propertyManager.set.bind(this.propertyManager);
-        /**
-         *
-         */
         this.store = new DataManager_1.default(this);
         /**
          * public method to get a property
@@ -595,6 +600,7 @@ var PropertyManager_1 = __importDefault(__webpack_require__(/*! ../../utils/Prop
 var math_1 = __webpack_require__(/*! ../math */ "./src/libs/math/index.ts");
 var Slim = __importStar(__webpack_require__(/*! ../../utils/slim */ "./src/utils/slim/index.ts"));
 var DataManager_1 = __importDefault(__webpack_require__(/*! ../../utils/DataManager */ "./src/utils/DataManager.ts"));
+var EventEmitter_1 = __importDefault(__webpack_require__(/*! ../../utils/EventEmitter */ "./src/utils/EventEmitter.ts"));
 var Container = /** @class */ (function () {
     /**
      * a character with no special meaning at all but used to group other characters
@@ -636,9 +642,13 @@ var Container = /** @class */ (function () {
          * @returns return the character instance if the character exist else return `null`
          */
         this.child = this.Storage.child.bind(this.Storage);
+        this.eventEmitter = new EventEmitter_1.default(this);
         /**
-         *
+         * public method to set an event
+         * @param event name of event to add
+         * @param callback callback function to call when the event is emiited
          */
+        this.on = this.eventEmitter.on.bind(this.eventEmitter);
         this.store = new DataManager_1.default(this);
         /**
          * public method to check if a character exist
@@ -2167,6 +2177,67 @@ var DataManager = /** @class */ (function () {
     return DataManager;
 }());
 exports["default"] = DataManager;
+
+
+/***/ }),
+
+/***/ "./src/utils/EventEmitter.ts":
+/*!***********************************!*\
+  !*** ./src/utils/EventEmitter.ts ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var EventEmitter = /** @class */ (function () {
+    /**
+     * 🛠 utility class to handle calling and setting of different event of a character
+     * @param character instance of the character
+     */
+    function EventEmitter(character) {
+        this.eventMap = new Map();
+        this.character = character;
+    }
+    /**
+     * public method to set an event
+     * @param event name of event to add
+     * @param callback callback function to call when the event is emiited
+     */
+    EventEmitter.prototype.on = function (event, callback) {
+        this.eventMap.set(event, callback);
+    };
+    /**
+     * public method to call an event
+     * @param event name of event to emit
+     * @param args function arguments of the event
+     * @returns return `true` if the event is emitted else return `false`
+     */
+    EventEmitter.prototype.emit = function (event) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        if (this.eventMap.has(event)) {
+            var callback = this.eventMap.get(event);
+            callback.apply(null, __spreadArray([this.character], args, true));
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    return EventEmitter;
+}());
+exports["default"] = EventEmitter;
 
 
 /***/ }),

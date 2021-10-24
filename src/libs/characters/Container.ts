@@ -4,6 +4,7 @@ import { Vector2 } from "../math"
 import * as Slim from "../../utils/slim"
 import { CharacterParentType, CharacterTreeOption } from "../../typeDecleration"
 import DataManager from "../../utils/DataManager"
+import EventEmitter from "../../utils/EventEmitter"
 
 export interface ContainerPropertyOption {
     /**
@@ -95,9 +96,15 @@ export default class Container {
      */
     public child = this.Storage.child.bind(this.Storage)
 
+    private eventEmitter:EventEmitter = new EventEmitter(this)
+
     /**
-     * 
+     * public method to set an event
+     * @param event name of event to add
+     * @param callback callback function to call when the event is emiited
      */
+    public on = this.eventEmitter.on.bind(this.eventEmitter)
+
     public store:DataManager = new DataManager(this)
 
     /**

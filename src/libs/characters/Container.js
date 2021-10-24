@@ -26,6 +26,7 @@ var PropertyManager_1 = __importDefault(require("../../utils/PropertyManager"));
 var math_1 = require("../math");
 var Slim = __importStar(require("../../utils/slim"));
 var DataManager_1 = __importDefault(require("../../utils/DataManager"));
+var EventEmitter_1 = __importDefault(require("../../utils/EventEmitter"));
 var Container = /** @class */ (function () {
     /**
      * a character with no special meaning at all but used to group other characters
@@ -67,9 +68,13 @@ var Container = /** @class */ (function () {
          * @returns return the character instance if the character exist else return `null`
          */
         this.child = this.Storage.child.bind(this.Storage);
+        this.eventEmitter = new EventEmitter_1.default(this);
         /**
-         *
+         * public method to set an event
+         * @param event name of event to add
+         * @param callback callback function to call when the event is emiited
          */
+        this.on = this.eventEmitter.on.bind(this.eventEmitter);
         this.store = new DataManager_1.default(this);
         /**
          * public method to check if a character exist

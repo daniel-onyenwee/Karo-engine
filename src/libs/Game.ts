@@ -6,6 +6,7 @@ import Camera from "../utils/Camera"
 import PropertyManager from "../utils/PropertyManager"
 import { CharacterTreeOption } from "../typeDecleration"
 import DataManager from "../utils/DataManager"
+import EventEmitter from "../utils/EventEmitter"
 
 export interface GamePropertyOption {
     "background color"?: Color
@@ -36,7 +37,16 @@ export default class Game {
 
     private Updater:Slim.Updater
 
-    protected propertyManager:PropertyManager = new PropertyManager()
+    private propertyManager:PropertyManager = new PropertyManager()
+
+    private eventEmitter:EventEmitter = new EventEmitter(this)
+
+    /**
+     * public method to set an event
+     * @param event name of event to add
+     * @param callback callback function to call when the event is emiited
+     */
+    public on = this.eventEmitter.on.bind(this.eventEmitter)
 
     /**
      * public method to set a property
@@ -45,9 +55,6 @@ export default class Game {
      */
     public set = this.propertyManager.set.bind(this.propertyManager)
 
-    /**
-     * 
-     */
     public store:DataManager = new DataManager(this)
 
     /**

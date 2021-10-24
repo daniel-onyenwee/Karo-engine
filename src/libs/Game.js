@@ -29,6 +29,7 @@ var InputEventManager_1 = require("../utils/InputEventManager");
 var Camera_1 = __importDefault(require("../utils/Camera"));
 var PropertyManager_1 = __importDefault(require("../utils/PropertyManager"));
 var DataManager_1 = __importDefault(require("../utils/DataManager"));
+var EventEmitter_1 = __importDefault(require("../utils/EventEmitter"));
 var Game = /** @class */ (function () {
     /**
      * a javascript class to create the karo engine game object
@@ -42,15 +43,19 @@ var Game = /** @class */ (function () {
         this.Storage = new Slim.Storage(this);
         this.camera = new Camera_1.default(this);
         this.propertyManager = new PropertyManager_1.default();
+        this.eventEmitter = new EventEmitter_1.default(this);
+        /**
+         * public method to set an event
+         * @param event name of event to add
+         * @param callback callback function to call when the event is emiited
+         */
+        this.on = this.eventEmitter.on.bind(this.eventEmitter);
         /**
          * public method to set a property
          * @param name name name of the property to set
          * @param value value to set the property with
          */
         this.set = this.propertyManager.set.bind(this.propertyManager);
-        /**
-         *
-         */
         this.store = new DataManager_1.default(this);
         /**
          * public method to get a property
