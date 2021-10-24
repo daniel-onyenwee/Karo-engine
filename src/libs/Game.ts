@@ -3,9 +3,9 @@ import { Color, Vector2 } from "./math"
 import AssetsLoader from "../utils/AssetLoader"
 import { KeyboardEventManager } from "../utils/InputEventManager"
 import Camera from "../utils/Camera"
-import DataStorage from "../utils/DataStorage"
 import PropertyManager from "../utils/PropertyManager"
 import { CharacterTreeOption } from "../typeDecleration"
+import DataManager from "../utils/DataManager"
 
 export interface GamePropertyOption {
     "background color"?: Color
@@ -36,8 +36,6 @@ export default class Game {
 
     private Updater:Slim.Updater
 
-    protected dataStorage:DataStorage =  new DataStorage(this)
-
     protected propertyManager:PropertyManager = new PropertyManager()
 
     /**
@@ -48,20 +46,16 @@ export default class Game {
     public set = this.propertyManager.set.bind(this.propertyManager)
 
     /**
+     * 
+     */
+    public store:DataManager = new DataManager(this)
+
+    /**
      * public method to get a property
      * @param name name name of the property to get
      * @returns if property exist return it value else return `null`
      */
     public get = this.propertyManager.get.bind(this.propertyManager)
-
-    public store = this.dataStorage.dataMap
-
-    /**
-     * public method to get a reference of a child character data store
-     * @param path the child character path
-     * @returns if the child character exist return its data store return `null`
-     */
-    public ref = this.dataStorage.ref.bind(this.dataStorage)
 
     /**
      * public method to load a list of assets

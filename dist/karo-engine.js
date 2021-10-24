@@ -55,8 +55,8 @@ var math_1 = __webpack_require__(/*! ./math */ "./src/libs/math/index.ts");
 var AssetLoader_1 = __importDefault(__webpack_require__(/*! ../utils/AssetLoader */ "./src/utils/AssetLoader.ts"));
 var InputEventManager_1 = __webpack_require__(/*! ../utils/InputEventManager */ "./src/utils/InputEventManager/index.ts");
 var Camera_1 = __importDefault(__webpack_require__(/*! ../utils/Camera */ "./src/utils/Camera.ts"));
-var DataStorage_1 = __importDefault(__webpack_require__(/*! ../utils/DataStorage */ "./src/utils/DataStorage.ts"));
 var PropertyManager_1 = __importDefault(__webpack_require__(/*! ../utils/PropertyManager */ "./src/utils/PropertyManager.ts"));
+var DataManager_1 = __importDefault(__webpack_require__(/*! ../utils/DataManager */ "./src/utils/DataManager.ts"));
 var Game = /** @class */ (function () {
     /**
      * a javascript class to create the karo engine game object
@@ -69,7 +69,6 @@ var Game = /** @class */ (function () {
         this.Render = new Slim.Render();
         this.Storage = new Slim.Storage(this);
         this.camera = new Camera_1.default(this);
-        this.dataStorage = new DataStorage_1.default(this);
         this.propertyManager = new PropertyManager_1.default();
         /**
          * public method to set a property
@@ -78,18 +77,15 @@ var Game = /** @class */ (function () {
          */
         this.set = this.propertyManager.set.bind(this.propertyManager);
         /**
+         *
+         */
+        this.store = new DataManager_1.default(this);
+        /**
          * public method to get a property
          * @param name name name of the property to get
          * @returns if property exist return it value else return `null`
          */
         this.get = this.propertyManager.get.bind(this.propertyManager);
-        this.store = this.dataStorage.dataMap;
-        /**
-         * public method to get a reference of a child character data store
-         * @param path the child character path
-         * @returns if the child character exist return its data store return `null`
-         */
-        this.ref = this.dataStorage.ref.bind(this.dataStorage);
         /**
          * public method to load a list of assets
          * @param assets list of assets to load
@@ -598,7 +594,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 var PropertyManager_1 = __importDefault(__webpack_require__(/*! ../../utils/PropertyManager */ "./src/utils/PropertyManager.ts"));
 var math_1 = __webpack_require__(/*! ../math */ "./src/libs/math/index.ts");
 var Slim = __importStar(__webpack_require__(/*! ../../utils/slim */ "./src/utils/slim/index.ts"));
-var DataStorage_1 = __importDefault(__webpack_require__(/*! ../../utils/DataStorage */ "./src/utils/DataStorage.ts"));
+var DataManager_1 = __importDefault(__webpack_require__(/*! ../../utils/DataManager */ "./src/utils/DataManager.ts"));
 var Container = /** @class */ (function () {
     /**
      * a character with no special meaning at all but used to group other characters
@@ -607,7 +603,6 @@ var Container = /** @class */ (function () {
     function Container(propertyOption) {
         this.Render = new Slim.Render();
         this.Storage = new Slim.Storage(this);
-        this.dataStorage = new DataStorage_1.default(this);
         this.displaySize = {
             x: 40,
             y: 50
@@ -641,13 +636,10 @@ var Container = /** @class */ (function () {
          * @returns return the character instance if the character exist else return `null`
          */
         this.child = this.Storage.child.bind(this.Storage);
-        this.store = this.dataStorage.dataMap;
         /**
-         * public method to get a reference of a child character data store
-         * @param path the child character path
-         * @returns if the child character exist return its data store return `null`
+         *
          */
-        this.ref = this.dataStorage.ref.bind(this.dataStorage);
+        this.store = new DataManager_1.default(this);
         /**
          * public method to check if a character exist
          * @param path character path (e.g `character/character_child`)
@@ -2042,37 +2034,139 @@ exports["default"] = Camera;
 
 /***/ }),
 
-/***/ "./src/utils/DataStorage.ts":
+/***/ "./src/utils/DataManager.ts":
 /*!**********************************!*\
-  !*** ./src/utils/DataStorage.ts ***!
+  !*** ./src/utils/DataManager.ts ***!
   \**********************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var DataStorage = /** @class */ (function () {
+var DataManager = /** @class */ (function () {
     /**
      * 🛠 utility class to handle the storage of data for all the 🎭 characters
-     * @param parent instance of the character the data storage belong to
+     * @param character instance of the character the data storage belong to
      */
-    function DataStorage(parent) {
+    function DataManager(character) {
         this.dataMap = new Map();
-        this.parent = parent;
+        this.keyMap = new Map();
+        this.character = character;
     }
     /**
-     * public method to get a reference of a child character data store
-     * @param path the child character path
-     * @returns if the child character exist return its data store return `null`
+     * public method to rename the key of a data stored
+     * @param key key used to store the data
+     * @param name name to change the key to
      */
-    DataStorage.prototype.ref = function (path) {
-        if (this.parent.has(path))
-            return this.parent.child(path).store;
-        else
-            return null;
+    DataManager.prototype.rename = function (key, name) {
+        var id = this.keyMap.get(key);
+        if (id != undefined) {
+            var dataInput = this.dataMap.get(id);
+            if (!this.keyMap.has(name)) {
+                this.keyMap.delete(key);
+                this.keyMap.set(name, id);
+                this.dataMap.set(id, {
+                    type: dataInput.type,
+                    key: name,
+                    value: dataInput.value
+                });
+            }
+            else {
+                // Error
+            }
+        }
     };
-    return DataStorage;
+    /**
+     * public method to add or edit a data stored
+     * @param key key used to store the data
+     * @param value value of the data to store
+     */
+    DataManager.prototype.set = function (key, value) {
+        if (typeof value == "boolean" || typeof value == "number" || typeof value == "string") {
+            var id = this.keyMap.get(key);
+            var type = typeof value;
+            if (id != undefined) {
+                var dataInput = this.dataMap.get(id);
+                this.dataMap.set(id, {
+                    type: type,
+                    key: dataInput.key,
+                    value: value
+                });
+            }
+            else {
+                var id_1 = this.dataMap.size + 1;
+                this.dataMap.set(id_1, { key: key, value: value, type: type });
+                this.keyMap.set(key, id_1);
+            }
+        }
+        else {
+            // Error
+        }
+    };
+    /**
+     * public method to check if a data stored exist
+     * @param key key used to store the data
+     * @returns if the data exist return `true` else return `false`
+     */
+    DataManager.prototype.has = function (key) {
+        return this.keyMap.has(key);
+    };
+    /**
+     * public method to remove a data stored
+     * @param key key used to store the data
+     * @returns if return is deleted return `true` else return `false`
+     */
+    DataManager.prototype.delete = function (key) {
+        var id = this.keyMap.get(key);
+        if (id != undefined) {
+            this.keyMap.delete(key);
+            this.dataMap.delete(id);
+            return true;
+        }
+        return false;
+    };
+    /**
+     * public method to get a data stored
+     * @param key key used to store the data
+     * @returns if the data exist return the data else retun `null`
+     */
+    DataManager.prototype.get = function (key) {
+        var id = this.keyMap.get(key);
+        if (id != undefined) {
+            return this.dataMap.get(id);
+        }
+        else {
+            return null;
+        }
+    };
+    Object.defineProperty(DataManager.prototype, "size", {
+        /**
+         * public getter to get the number of data stored
+         */
+        get: function () {
+            return this.dataMap.size;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * public method to loop through all the data stored
+     * @param callback  callback function one time for each data stored
+     */
+    DataManager.prototype.forEach = function (callback) {
+        var _this = this;
+        this.dataMap.forEach(function (value) { return callback(value, value.key, _this); });
+    };
+    /**
+     * public method to list all the data stored
+     * @returns Array of all the data stored
+     */
+    DataManager.prototype.list = function () {
+        var dataList = Array.from(this.dataMap.values());
+        return dataList;
+    };
+    return DataManager;
 }());
-exports["default"] = DataStorage;
+exports["default"] = DataManager;
 
 
 /***/ }),

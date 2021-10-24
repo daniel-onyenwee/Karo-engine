@@ -25,7 +25,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var PropertyManager_1 = __importDefault(require("../../utils/PropertyManager"));
 var math_1 = require("../math");
 var Slim = __importStar(require("../../utils/slim"));
-var DataStorage_1 = __importDefault(require("../../utils/DataStorage"));
+var DataManager_1 = __importDefault(require("../../utils/DataManager"));
 var Container = /** @class */ (function () {
     /**
      * a character with no special meaning at all but used to group other characters
@@ -34,7 +34,6 @@ var Container = /** @class */ (function () {
     function Container(propertyOption) {
         this.Render = new Slim.Render();
         this.Storage = new Slim.Storage(this);
-        this.dataStorage = new DataStorage_1.default(this);
         this.displaySize = {
             x: 40,
             y: 50
@@ -68,13 +67,10 @@ var Container = /** @class */ (function () {
          * @returns return the character instance if the character exist else return `null`
          */
         this.child = this.Storage.child.bind(this.Storage);
-        this.store = this.dataStorage.dataMap;
         /**
-         * public method to get a reference of a child character data store
-         * @param path the child character path
-         * @returns if the child character exist return its data store return `null`
+         *
          */
-        this.ref = this.dataStorage.ref.bind(this.dataStorage);
+        this.store = new DataManager_1.default(this);
         /**
          * public method to check if a character exist
          * @param path character path (e.g `character/character_child`)

@@ -3,8 +3,7 @@ import PropertyManager from "../../utils/PropertyManager"
 import { Vector2 } from "../math"
 import * as Slim from "../../utils/slim"
 import { CharacterParentType, CharacterTreeOption } from "../../typeDecleration"
-import DataStorage from "../../utils/DataStorage"
-
+import DataManager from "../../utils/DataManager"
 
 export interface ContainerPropertyOption {
     /**
@@ -43,8 +42,6 @@ export default class Container {
     protected Storage:Slim.Storage = new Slim.Storage(this)
 
     protected Updater!:Slim.Updater
-
-    protected dataStorage:DataStorage =  new DataStorage(this)
 
     protected displayScale!:Vector2
 
@@ -98,14 +95,10 @@ export default class Container {
      */
     public child = this.Storage.child.bind(this.Storage)
 
-    public store = this.dataStorage.dataMap
-
     /**
-     * public method to get a reference of a child character data store
-     * @param path the child character path
-     * @returns if the child character exist return its data store return `null`
+     * 
      */
-    public ref = this.dataStorage.ref.bind(this.dataStorage)
+    public store:DataManager = new DataManager(this)
 
     /**
      * public method to check if a character exist

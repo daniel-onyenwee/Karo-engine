@@ -27,8 +27,8 @@ var math_1 = require("./math");
 var AssetLoader_1 = __importDefault(require("../utils/AssetLoader"));
 var InputEventManager_1 = require("../utils/InputEventManager");
 var Camera_1 = __importDefault(require("../utils/Camera"));
-var DataStorage_1 = __importDefault(require("../utils/DataStorage"));
 var PropertyManager_1 = __importDefault(require("../utils/PropertyManager"));
+var DataManager_1 = __importDefault(require("../utils/DataManager"));
 var Game = /** @class */ (function () {
     /**
      * a javascript class to create the karo engine game object
@@ -41,7 +41,6 @@ var Game = /** @class */ (function () {
         this.Render = new Slim.Render();
         this.Storage = new Slim.Storage(this);
         this.camera = new Camera_1.default(this);
-        this.dataStorage = new DataStorage_1.default(this);
         this.propertyManager = new PropertyManager_1.default();
         /**
          * public method to set a property
@@ -50,18 +49,15 @@ var Game = /** @class */ (function () {
          */
         this.set = this.propertyManager.set.bind(this.propertyManager);
         /**
+         *
+         */
+        this.store = new DataManager_1.default(this);
+        /**
          * public method to get a property
          * @param name name name of the property to get
          * @returns if property exist return it value else return `null`
          */
         this.get = this.propertyManager.get.bind(this.propertyManager);
-        this.store = this.dataStorage.dataMap;
-        /**
-         * public method to get a reference of a child character data store
-         * @param path the child character path
-         * @returns if the child character exist return its data store return `null`
-         */
-        this.ref = this.dataStorage.ref.bind(this.dataStorage);
         /**
          * public method to load a list of assets
          * @param assets list of assets to load
