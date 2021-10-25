@@ -77,6 +77,7 @@ export default class Sound extends Container {
                     if (!this.get("repeat")) {
                         this.set("play", false)
                         this.audio?.pause()
+                        this.eventEmitter.emit("finished")
                     }
                 }
             }

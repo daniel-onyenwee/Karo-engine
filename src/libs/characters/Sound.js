@@ -68,6 +68,7 @@ var Sound = /** @class */ (function (_super) {
                     if (!_this.get("repeat")) {
                         _this.set("play", false);
                         (_a = _this.audio) === null || _a === void 0 ? void 0 : _a.pause();
+                        _this.eventEmitter.emit("finished");
                     }
                 };
             }
