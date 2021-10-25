@@ -96,7 +96,7 @@ var PropertyManager = /** @class */ (function () {
      * public method to get all the character propertries
      * @returns return an `Array` of type object
      */
-    PropertyManager.prototype.entry = function () {
+    PropertyManager.prototype.allProperties = function () {
         return Array
             .from(this.propertyMap)
             .filter(function (property) { return !property[1].readonly; })

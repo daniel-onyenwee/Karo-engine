@@ -50,11 +50,6 @@ export default class Container {
 
     protected displayRotation!:number
 
-    private displaySize = {
-        x: 40,
-        y: 50
-    }
-
     private _parent!:CharacterParentType
 
     protected canvas!:HTMLCanvasElement
@@ -85,9 +80,9 @@ export default class Container {
 
     /**
      * public method to get all the character propertries
-     * @returns return a `Map` with the property name as the map key and the property value as the map value
+     * @returns return an `Array` of type object
      */
-    public entry = this.propertyManager.entry.bind(this.propertyManager)
+    public allProperties = this.propertyManager.allProperties.bind(this.propertyManager)
 
     /**
      * public method to get a character

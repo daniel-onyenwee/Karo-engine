@@ -110,7 +110,7 @@ export default class PropertyManager {
      * public method to get all the character propertries
      * @returns return an `Array` of type object
      */
-    public entry(): Array<{name: string, value: PropertyValueType, type: PropertyValueTypeString}> {
+    public allProperties(): Array<{name: string, value: PropertyValueType, type: PropertyValueTypeString}> {
         return Array
             .from(this.propertyMap)
             .filter(property => !property[1].readonly)

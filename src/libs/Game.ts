@@ -126,6 +126,12 @@ export default class Game {
     public get tree(): CharacterTreeOption  {
         return this.Storage.characterTree
     }
+
+    /**
+     * public method to get all the character propertries
+     * @returns return an `Array` of type object
+     */
+    public allProperties = this.propertyManager.allProperties.bind(this.propertyManager)
     
     private keyboardEvent:KeyboardEventManager = new KeyboardEventManager(this)
 

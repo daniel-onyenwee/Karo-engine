@@ -110,6 +110,11 @@ var Game = /** @class */ (function () {
          * @returns return `true` if character exist else return `false`
         */
         this.has = this.Storage.has.bind(this.Storage);
+        /**
+         * public method to get all the character propertries
+         * @returns return an `Array` of type object
+         */
+        this.allProperties = this.propertyManager.allProperties.bind(this.propertyManager);
         this.keyboardEvent = new InputEventManager_1.KeyboardEventManager(this);
         /**
          * public method to register a key combination from the keyboard

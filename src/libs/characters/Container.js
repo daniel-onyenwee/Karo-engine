@@ -35,10 +35,6 @@ var Container = /** @class */ (function () {
     function Container(propertyOption) {
         this.Render = new Slim.Render();
         this.Storage = new Slim.Storage(this);
-        this.displaySize = {
-            x: 40,
-            y: 50
-        };
         this.propertyManager = new PropertyManager_1.default();
         /**
          * public method to set a property
@@ -59,9 +55,9 @@ var Container = /** @class */ (function () {
         this.add = this.Storage.add.bind(this.Storage);
         /**
          * public method to get all the character propertries
-         * @returns return a `Map` with the property name as the map key and the property value as the map value
+         * @returns return an `Array` of type object
          */
-        this.entry = this.propertyManager.entry.bind(this.propertyManager);
+        this.allProperties = this.propertyManager.allProperties.bind(this.propertyManager);
         /**
          * public method to get a character
          * @param path character path (e.g `character/character_child`)
