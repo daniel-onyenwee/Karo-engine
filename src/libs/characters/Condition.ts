@@ -62,47 +62,47 @@ export default class Condition extends Container {
             if (this.get("play") == true) {
                 if (condition == "equal to") {
                     if (leftSide == rightSide) {
-                        
+                        this.eventEmitter.emit("is true")
                     } else {
-                        
+                        this.eventEmitter.emit("is false")
                     }
                 } else if (condition == "greater than") {
                     if (typeof leftSide == "number" && typeof rightSide == "number") {
                         if (leftSide > rightSide) {
-
+                            this.eventEmitter.emit("is true")
                         } else {
-                            
+                            this.eventEmitter.emit("is false")   
                         }
                     }
                 } else if (condition == "greater than or equal to") {
                     if (typeof leftSide == "number" && typeof rightSide == "number") {
                         if (leftSide >= rightSide) {
-
+                            this.eventEmitter.emit("is true")
                         } else {
-                            
+                            this.eventEmitter.emit("is false")
                         }
                     }
                 } else if (condition == "less than") {
                     if (typeof leftSide == "number" && typeof rightSide == "number") {
                         if (leftSide < rightSide) {
-
+                            this.eventEmitter.emit("is true")
                         } else {
-                            
+                            this.eventEmitter.emit("is false")
                         }
                     }
                 } else if (condition == "less than or equal to") {
                     if (typeof leftSide == "number" && typeof rightSide == "number") {
                         if (leftSide <= rightSide) {
-
+                            this.eventEmitter.emit("is true")
                         } else {
-                            
+                            this.eventEmitter.emit("is false")
                         }
                     }
                 } else if (condition == "not") {
                     if (leftSide != rightSide) {
-
+                        this.eventEmitter.emit("is true")
                     } else {
-                        
+                        this.eventEmitter.emit("is false")
                     }
                 }
                 this.set("play", false)
