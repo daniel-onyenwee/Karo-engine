@@ -38,7 +38,6 @@ var Game = /** @class */ (function () {
     function Game(propertyOption) {
         this.oldTime = 0;
         this.assetsLoader = new AssetLoader_1.default();
-        this._devMode = "on";
         this.Render = new Slim.Render();
         this.Storage = new Slim.Storage(this);
         this.camera = new Camera_1.default(this);
@@ -142,19 +141,6 @@ var Game = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(Game.prototype, "developmentMode", {
-        get: function () {
-            return this._devMode;
-        },
-        /**
-         * public property to activate the engine development mode
-         */
-        set: function (mode) {
-            this._devMode = mode;
-        },
-        enumerable: false,
-        configurable: true
-    });
     Object.defineProperty(Game.prototype, "type", {
         /**
          * public getter to get the type of the character
@@ -177,14 +163,8 @@ var Game = /** @class */ (function () {
         this.assetsLoader.isAssetsLoaded()
             .then(function () {
             _this.graphic.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
-            if (_this._devMode == "on") {
-                _this.Updater.update(dt);
-                _this.Render.render(_this.graphic, new math_1.Vector2(0, 0), new math_1.Vector2(1, 1), 0);
-            }
-            else {
-                _this.Updater.update(dt);
-                _this.Render.render(_this.graphic, new math_1.Vector2(0, 0), new math_1.Vector2(1, 1), 0);
-            }
+            _this.Updater.update(dt);
+            _this.Render.render(_this.graphic, new math_1.Vector2(0, 0), new math_1.Vector2(1, 1), 0);
         });
     };
     /**
@@ -192,8 +172,7 @@ var Game = /** @class */ (function () {
      * @param ev Javascript object that describe the user interaction with the keyboard
      */
     Game.prototype.onKeyPress = function (ev) {
-        if (this._devMode == "off")
-            this.keyboardEvent.onKeyPress(ev);
+        this.keyboardEvent.onKeyPress(ev);
     };
     Object.defineProperty(Game.prototype, "offset", {
         /**

@@ -27,8 +27,6 @@ export default class Game {
 
     private graphic:CanvasRenderingContext2D
 
-    private _devMode:"off"|"on" = "on"
-
     private Render:Slim.Render = new Slim.Render()
 
     private Storage:Slim.Storage = new Slim.Storage(this)
@@ -138,17 +136,6 @@ export default class Game {
      * @param keyCombination the key combination to remove
      */
     public unregister = this.keyboardEvent.unregister.bind(this.keyboardEvent)
-    
-    /**
-     * public property to activate the engine development mode
-     */
-    public set developmentMode(mode:"on"|"off") {
-        this._devMode = mode
-    }
-
-    public get developmentMode(): "on"|"off" {
-        return this._devMode
-    }
 
     /**
      * public getter to get the type of the character
@@ -186,13 +173,8 @@ export default class Game {
         this.assetsLoader.isAssetsLoaded()
         .then(() => {
             this.graphic.clearRect(0, 0, this.canvas.width, this.canvas.height)
-            if (this._devMode == "on") {
-                this.Updater.update(dt)
-                this.Render.render(this.graphic, new Vector2(0,0), new Vector2(1, 1), 0)
-            } else {
-                this.Updater.update(dt)
-                this.Render.render(this.graphic, new Vector2(0,0), new Vector2(1, 1), 0)
-            }
+            this.Updater.update(dt)
+            this.Render.render(this.graphic, new Vector2(0,0), new Vector2(1, 1), 0)
         })
     }
 
@@ -201,8 +183,7 @@ export default class Game {
      * @param ev Javascript object that describe the user interaction with the keyboard
      */
     public onKeyPress(ev:KeyboardEvent): void {
-        if (this._devMode == "off")
-            this.keyboardEvent.onKeyPress(ev)
+        this.keyboardEvent.onKeyPress(ev)  
     }
 
      /**
