@@ -194,6 +194,20 @@ var Game = /** @class */ (function () {
         this.isplaying = false;
     };
     /**
+     * public method to fix blurry nature of the canvas
+     * @param canvas instance of `HTMLCanvasElement` to sharpen
+     * @returns the sharpen html canvas element `CanvasRenderingContext2D` instance
+     */
+    Game.prototype.sharpenCanvas = function (canvas) {
+        var dpr = window.devicePixelRatio || 1;
+        var rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        var ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        return ctx;
+    };
+    /**
      * public method to draw the game
      * @param time number of second since the browser was last rendered
      */
@@ -202,6 +216,7 @@ var Game = /** @class */ (function () {
         if (this.isplaying) {
             var dt_1 = (time - this.oldTime) / 1000;
             this.oldTime = time;
+            this.graphic = this.sharpenCanvas(this.canvas);
             this.canvas.style.backgroundColor = this.get("background color").toString();
             this.assetsLoader.isAssetsLoaded()
                 .then(function () {
