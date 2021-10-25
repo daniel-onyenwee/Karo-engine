@@ -2710,6 +2710,17 @@ var Updater = /** @class */ (function () {
      */
     Updater.prototype.update = function (dt) {
         var _this = this;
+        var width = parseInt(getComputedStyle(this.canvas).width);
+        if (width <= 480)
+            this.character.emit("extra small size", width);
+        else if (width > 480 && width <= 768)
+            this.character.emit("small size", width);
+        else if (width > 768 && width <= 1024)
+            this.character.emit("medium size", width);
+        else if (width > 1024 && width <= 1200)
+            this.character.emit("large size", width);
+        else if (width > 1200)
+            this.character.emit("extra large size", width);
         var characterList = this.storage.list();
         var predefineCharacterList = this.storage.listPredefineCharacter();
         predefineCharacterList.forEach(function (character) {

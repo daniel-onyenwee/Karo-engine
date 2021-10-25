@@ -38,6 +38,17 @@ export default class Updater {
      * @param dt time difference between the previous frame and the current time
      */
     public update(dt:number): void { 
+        let width:number = parseInt(getComputedStyle(this.canvas).width)
+        if (width <= 480)
+            this.character.emit("extra small size", width)
+        else if (width > 480 && width <= 768)
+            this.character.emit("small size", width)
+        else if (width > 768 && width <= 1024)
+            this.character.emit("medium size", width)
+        else if (width > 1024 && width <= 1200)
+            this.character.emit("large size", width) 
+        else if (width > 1200)
+            this.character.emit("extra large size", width)   
         let characterList:Array<CharacterChildrenType> = this.storage.list()
         let predefineCharacterList:Array<CharacterChildrenType> = this.storage.listPredefineCharacter()
 
