@@ -63,6 +63,7 @@ export default class Timer extends Container {
                 this.currentTime += dt
                 if (this.currentTime >= waitTime) {
                     this.currentTime = 0
+                    this.eventEmitter.emit("timeout")
                     if (!repeat) {
                         this.set("play", false)
                     }
