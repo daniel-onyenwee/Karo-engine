@@ -140,7 +140,7 @@ export default class Game {
     /**
      * public getter to get the type of the character
      */
-     public get type(): string { 
+    public get type(): string { 
         return "Game"
     }
 
@@ -167,12 +167,18 @@ export default class Game {
      * @param time number of second since the browser was last rendered
      */
     public draw(time:number) {
+        let isReady:boolean = false
+        if (this.oldTime == 0)
+            isReady = true
         let dt = (time - this.oldTime)/1000
         this.oldTime = time
         this.canvas.style.backgroundColor = (this.get("background color") as Color).toString()
         this.assetsLoader.isAssetsLoaded()
         .then(() => {
+            if(isReady)
+                this.eventEmitter.emit("ready")
             this.graphic.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            this.eventEmitter.emit("update", dt)
             this.Updater.update(dt)
             this.Render.render(this.graphic, new Vector2(0,0), new Vector2(1, 1), 0)
         })

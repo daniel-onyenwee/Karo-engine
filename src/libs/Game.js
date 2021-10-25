@@ -157,12 +157,18 @@ var Game = /** @class */ (function () {
      */
     Game.prototype.draw = function (time) {
         var _this = this;
+        var isReady = false;
+        if (this.oldTime == 0)
+            isReady = true;
         var dt = (time - this.oldTime) / 1000;
         this.oldTime = time;
         this.canvas.style.backgroundColor = this.get("background color").toString();
         this.assetsLoader.isAssetsLoaded()
             .then(function () {
+            if (isReady)
+                _this.eventEmitter.emit("ready");
             _this.graphic.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
+            _this.eventEmitter.emit("update", dt);
             _this.Updater.update(dt);
             _this.Render.render(_this.graphic, new math_1.Vector2(0, 0), new math_1.Vector2(1, 1), 0);
         });
