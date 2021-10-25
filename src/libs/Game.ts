@@ -181,15 +181,30 @@ export default class Game {
     }
 
     /**
+     * public method to fix blurry nature of the canvas
+     * @param canvas instance of `HTMLCanvasElement` to sharpen
+     * @returns the sharpen html canvas element `CanvasRenderingContext2D` instance
+     */
+    private sharpenCanvas(canvas:HTMLCanvasElement) {
+        var dpr = window.devicePixelRatio || 1;
+        var rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        var ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+        ctx.scale(dpr, dpr);
+        return ctx;
+      }
+      
+
+    /**
      * public method to draw the game
      * @param time number of second since the browser was last rendered
      */
     public draw(time:number) {
-        
-
         if (this.isplaying) {
             let dt = (time - this.oldTime)/1000
             this.oldTime = time
+            this.graphic = this.sharpenCanvas(this.canvas)
             this.canvas.style.backgroundColor = (this.get("background color") as Color).toString()
             this.assetsLoader.isAssetsLoaded()
             .then(() => {
