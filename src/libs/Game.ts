@@ -21,6 +21,8 @@ export interface GamePropertyOption {
 export default class Game {
     private canvas:HTMLCanvasElement
 
+    private isplaying:boolean = true
+
     private oldTime:number = 0
 
     private assetsLoader:AssetsLoader = new AssetsLoader()
@@ -38,6 +40,8 @@ export default class Game {
     private propertyManager:PropertyManager = new PropertyManager()
 
     private eventEmitter:EventEmitter = new EventEmitter(this)
+
+    private isReady:boolean = false
 
     /**
      * public method to set an event
@@ -163,25 +167,42 @@ export default class Game {
     }
 
     /**
+     * public method to play the game loop
+     */
+    public play(): void {
+        this.isplaying = true
+    }
+
+    /**
+     * public method to stop the game loop
+     */
+    public stop(): void {
+        this.isplaying = false
+    }
+
+    /**
      * public method to draw the game
      * @param time number of second since the browser was last rendered
      */
     public draw(time:number) {
-        let isReady:boolean = false
-        if (this.oldTime == 0)
-            isReady = true
-        let dt = (time - this.oldTime)/1000
-        this.oldTime = time
-        this.canvas.style.backgroundColor = (this.get("background color") as Color).toString()
-        this.assetsLoader.isAssetsLoaded()
-        .then(() => {
-            if(isReady)
-                this.eventEmitter.emit("ready")
-            this.graphic.clearRect(0, 0, this.canvas.width, this.canvas.height)
-            this.eventEmitter.emit("update", dt)
-            this.Updater.update(dt)
-            this.Render.render(this.graphic, new Vector2(0,0), new Vector2(1, 1), 0)
-        })
+        
+
+        if (this.isplaying) {
+            let dt = (time - this.oldTime)/1000
+            this.oldTime = time
+            this.canvas.style.backgroundColor = (this.get("background color") as Color).toString()
+            this.assetsLoader.isAssetsLoaded()
+            .then(() => {
+                if(!this.isReady) {
+                    this.eventEmitter.emit("ready")
+                    this.isReady = true
+                }
+                this.graphic.clearRect(0, 0, this.canvas.width, this.canvas.height)
+                this.eventEmitter.emit("update", dt)
+                this.Updater.update(dt)
+                this.Render.render(this.graphic, new Vector2(0,0), new Vector2(1, 1), 0)
+            })
+        }
     }
 
     /**

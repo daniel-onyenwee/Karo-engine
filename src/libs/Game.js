@@ -36,6 +36,7 @@ var Game = /** @class */ (function () {
      * @param propertyOption property of game class
      */
     function Game(propertyOption) {
+        this.isplaying = true;
         this.oldTime = 0;
         this.assetsLoader = new AssetLoader_1.default();
         this.Render = new Slim.Render();
@@ -43,6 +44,7 @@ var Game = /** @class */ (function () {
         this.camera = new Camera_1.default(this);
         this.propertyManager = new PropertyManager_1.default();
         this.eventEmitter = new EventEmitter_1.default(this);
+        this.isReady = false;
         /**
          * public method to set an event
          * @param event name of event to add
@@ -152,26 +154,39 @@ var Game = /** @class */ (function () {
         configurable: true
     });
     /**
+     * public method to play the game loop
+     */
+    Game.prototype.play = function () {
+        this.isplaying = true;
+    };
+    /**
+     * public method to stop the game loop
+     */
+    Game.prototype.stop = function () {
+        this.isplaying = false;
+    };
+    /**
      * public method to draw the game
      * @param time number of second since the browser was last rendered
      */
     Game.prototype.draw = function (time) {
         var _this = this;
-        var isReady = false;
-        if (this.oldTime == 0)
-            isReady = true;
-        var dt = (time - this.oldTime) / 1000;
-        this.oldTime = time;
-        this.canvas.style.backgroundColor = this.get("background color").toString();
-        this.assetsLoader.isAssetsLoaded()
-            .then(function () {
-            if (isReady)
-                _this.eventEmitter.emit("ready");
-            _this.graphic.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
-            _this.eventEmitter.emit("update", dt);
-            _this.Updater.update(dt);
-            _this.Render.render(_this.graphic, new math_1.Vector2(0, 0), new math_1.Vector2(1, 1), 0);
-        });
+        if (this.isplaying) {
+            var dt_1 = (time - this.oldTime) / 1000;
+            this.oldTime = time;
+            this.canvas.style.backgroundColor = this.get("background color").toString();
+            this.assetsLoader.isAssetsLoaded()
+                .then(function () {
+                if (!_this.isReady) {
+                    _this.eventEmitter.emit("ready");
+                    _this.isReady = true;
+                }
+                _this.graphic.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
+                _this.eventEmitter.emit("update", dt_1);
+                _this.Updater.update(dt_1);
+                _this.Render.render(_this.graphic, new math_1.Vector2(0, 0), new math_1.Vector2(1, 1), 0);
+            });
+        }
     };
     /**
      * public method to called when the user interaction with the keyboard
