@@ -53,10 +53,14 @@ var Loop = /** @class */ (function (_super) {
      * @param dt time difference between the previous frame and the current time
      */
     Loop.prototype.update = function (dt) {
+        var _this = this;
         if (this.get("is initalize") && !this.get("is destroyed")) {
             if (this.get("play") == true) {
                 __spreadArray([], Array.from(Array(this.get("time")).keys()), true).forEach(function (i) {
                     i = i + 1;
+                    _this.eventEmitter.emit("each", i);
+                    if (i == _this.get("time"))
+                        _this.eventEmitter.emit("end", i);
                 });
                 this.set("play", false);
             }

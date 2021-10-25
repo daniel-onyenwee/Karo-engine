@@ -57,6 +57,9 @@ export default class Loop extends Container {
             if (this.get("play") == true) {
                 [...Array.from(Array(this.get("time")).keys())].forEach((i:number) => {
                     i = i + 1
+                    this.eventEmitter.emit("each", i)
+                    if (i == this.get("time"))
+                        this.eventEmitter.emit("end", i)
                 })
                 this.set("play", false)
             }
