@@ -1,10 +1,6 @@
 # Change log for [Karo Engine](https://github.com/daniel-onyenwee/karo-engine.git)
 
-<<<<<<< HEAD
 ## 0.0.3-beta 2021-10-27
-=======
-## 0.0.3-beta 2021-10-25
->>>>>>> c971052063193ed071d0d52c4c5401c6bb096235
 
 ### Feature addition
 
