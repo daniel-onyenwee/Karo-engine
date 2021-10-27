@@ -66,7 +66,7 @@ var Box = /** @class */ (function (_super) {
             graphics.translate(-this.displayPosition.x, -this.displayPosition.y);
             graphics.globalAlpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
             graphics.shadowBlur = this.get("shadow blur");
-            graphics.shadowColor = this.get("color").toString();
+            graphics.shadowColor = this.get("shadow color").toString();
             graphics.shadowOffsetX = this.get("shadow offset").x;
             graphics.shadowOffsetY = this.get("shadow offset").y;
             graphics.lineWidth = this.get("line width");
@@ -81,6 +81,17 @@ var Box = /** @class */ (function (_super) {
             else if (this.get("fill") == false)
                 graphics.stroke();
             graphics.restore();
+            var pointerEvent = this.game.pointerEventDetector.inputEvent;
+            if (pointerEvent != null) {
+                var inPoint = graphics.isPointInPath(pointerEvent.position.x, pointerEvent.position.y) ?
+                    true : graphics.isPointInStroke(pointerEvent.position.x, pointerEvent.position.y) ?
+                    true : false;
+                var alpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
+                var color = this.get("color");
+                if (inPoint && alpha > 0 && color.alpha > 0) {
+                    this.game.pointerEventDetector.characterDetected = this;
+                }
+            }
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation);
         }
     };

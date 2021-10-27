@@ -102,6 +102,17 @@ var Image = /** @class */ (function (_super) {
                 }
             }
             graphics.restore();
+            var pointerEvent = this.game.pointerEventDetector.inputEvent;
+            if (pointerEvent != null) {
+                var inPoint = graphics.isPointInPath(pointerEvent.position.x, pointerEvent.position.y) ?
+                    true : graphics.isPointInStroke(pointerEvent.position.x, pointerEvent.position.y) ?
+                    true : false;
+                var alpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
+                var color = this.get("color");
+                if (inPoint && alpha > 0 && color.alpha > 0) {
+                    this.game.pointerEventDetector.characterDetected = this;
+                }
+            }
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation);
         }
     };

@@ -72,7 +72,7 @@ var Text = /** @class */ (function (_super) {
             graphics.translate(-this.displayPosition.x, -this.displayPosition.y);
             graphics.globalAlpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
             graphics.shadowBlur = this.get("shadow blur");
-            graphics.shadowColor = this.get("color").toString();
+            graphics.shadowColor = this.get("shadow color").toString();
             graphics.shadowOffsetX = this.get("shadow offset").x;
             graphics.shadowOffsetY = this.get("shadow offset").y;
             graphics.font = this.get("font style") + " " + this.get("font variant") + " " + this.get("font weight") + " " + this.get("font size") + "px " + this.get("font family");
@@ -87,7 +87,37 @@ var Text = /** @class */ (function (_super) {
                 graphics.strokeStyle = this.get("color").toString();
                 graphics.strokeText(this.get("text"), this.displayPosition.x - this.game.offset.x, this.displayPosition.y - this.game.offset.y);
             }
+            var textWidth = graphics.measureText(this.get("text")).width;
+            var regionX = (this.displayPosition.x - this.game.offset.x) - textWidth * 0.5;
+            var regionY = (this.displayPosition.x - this.game.offset.x) - this.get("font size") / 2;
+            if (graphics.textAlign == "center")
+                regionX = (this.displayPosition.x - this.game.offset.x) - textWidth * 0.5;
+            else if (graphics.textAlign == "end" || graphics.textAlign == "right")
+                regionX = (this.displayPosition.x - this.game.offset.x) - textWidth;
+            else if (graphics.textAlign == "start" || graphics.textAlign == "left")
+                regionX = (this.displayPosition.x - this.game.offset.x);
+            if (graphics.textBaseline == "middle")
+                regionY = (this.displayPosition.x - this.game.offset.x) - this.get("font size") / 2;
+            else if (graphics.textBaseline == "top" || graphics.textBaseline == "hanging")
+                regionY = (this.displayPosition.x - this.game.offset.x);
+            else if (graphics.textBaseline == "bottom" || graphics.textBaseline == "alphabetic" || graphics.textBaseline == "ideographic")
+                regionY = (this.displayPosition.x - this.game.offset.x) - this.get("font size");
+            var region = {
+                x: regionX,
+                y: regionY,
+                w: textWidth,
+                h: this.get("font size")
+            };
             graphics.restore();
+            var pointerEvent = this.game.pointerEventDetector.inputEvent;
+            if (pointerEvent != null) {
+                var inPoint = Object(graphics).isTextInPath(region, pointerEvent.position.x, pointerEvent.position.y);
+                var alpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
+                var color = this.get("color");
+                if (inPoint && alpha > 0 && color.alpha > 0) {
+                    this.game.pointerEventDetector.characterDetected = this;
+                }
+            }
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation);
         }
     };

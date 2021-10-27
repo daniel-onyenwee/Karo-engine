@@ -1,7 +1,8 @@
 import * as Slim from "../utils/slim"
 import { Color, Vector2 } from "./math"
 import AssetsLoader from "../utils/AssetLoader"
-import { KeyboardEventManager } from "../utils/InputEventManager"
+import { KeyboardEventManager, PointerEventManager } from "../utils/InputEventManager"
+import { PointerEventDetector, PointerInputEvent } from "../utils/InputEventManager/PointerEventManager"
 import Camera from "../utils/Camera"
 import PropertyManager from "../utils/PropertyManager"
 import { CharacterTreeOption } from "../typeDecleration"
@@ -20,8 +21,6 @@ export interface GamePropertyOption {
 
 export default class Game {
     private canvas:HTMLCanvasElement
-
-    private isplaying:boolean = true
 
     private oldTime:number = 0
 
@@ -42,6 +41,18 @@ export default class Game {
     private eventEmitter:EventEmitter = new EventEmitter(this)
 
     private isReady:boolean = false
+
+    private _isplaying:boolean = true
+
+    
+    public set isplaying(value: boolean) {
+        this._isplaying = value
+    }
+
+    public get isplaying(): boolean {
+        return this._isplaying
+    }
+    
 
     /**
      * public method to set an event
@@ -135,6 +146,10 @@ export default class Game {
     
     private keyboardEvent:KeyboardEventManager = new KeyboardEventManager(this)
 
+    private pointerEvent:PointerEventManager
+
+    public pointerEventDetector:PointerEventDetector = new PointerEventDetector()
+
     /**
      * public method to register a key combination from the keyboard
      * @param keyCombination the key combination to register
@@ -170,6 +185,7 @@ export default class Game {
         this.canvas = propertyOption.canvas
         this.graphic = this.canvas.getContext("2d") as CanvasRenderingContext2D
         this.Updater = new Slim.Updater(this.canvas, this, this, this.Storage, this.Render)
+        this.pointerEvent = new PointerEventManager(this.canvas, this, (event:PointerInputEvent) => this.pointerEventDetector.inputEvent = event)
     }
 
     /**
@@ -192,16 +208,21 @@ export default class Game {
      * @returns the sharpen html canvas element `CanvasRenderingContext2D` instance
      */
     private sharpenCanvas(canvas:HTMLCanvasElement) {
-        var dpr = window.devicePixelRatio || 1;
-        var rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        var ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-        ctx.scale(dpr, dpr);
-        return ctx;
-      }
+        var dpr = window.devicePixelRatio || 1
+        var rect = canvas.getBoundingClientRect()
+        canvas.width = rect.width * dpr
+        canvas.height = rect.height * dpr
+        var ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+        ctx.constructor.prototype.isTextInPath = function(region:{ x: number, y: number, h: number, w: number }, x: number, y: number): boolean {
+            let _this:CanvasRenderingContext2D = this
+            _this.beginPath()
+            _this.rect(region.x, region.y, region.w, region.h)
+            return _this.isPointInPath(x, y)
+        }
+        ctx.scale(dpr, dpr)
+        return ctx
+    }    
       
-
     /**
      * public method to draw the game
      * @param time number of second since the browser was last rendered
@@ -222,6 +243,14 @@ export default class Game {
                 this.eventEmitter.emit("update", dt)
                 this.Updater.update(dt)
                 this.Render.render(this.graphic, new Vector2(0,0), new Vector2(1, 1), 0)
+                if (this.pointerEventDetector.characterDetected != null && this.pointerEventDetector.inputEvent != null) {
+                    this.pointerEventDetector.characterDetected.emit("input", this.pointerEventDetector.inputEvent)
+                } else {
+                    if (this.pointerEventDetector.inputEvent != null)
+                        this.emit("input", this.pointerEventDetector.inputEvent)
+                }
+                this.pointerEventDetector.characterDetected = null
+                this.pointerEventDetector.inputEvent = null
             })
         }
     }

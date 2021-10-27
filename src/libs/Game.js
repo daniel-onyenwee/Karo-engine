@@ -26,6 +26,7 @@ var Slim = __importStar(require("../utils/slim"));
 var math_1 = require("./math");
 var AssetLoader_1 = __importDefault(require("../utils/AssetLoader"));
 var InputEventManager_1 = require("../utils/InputEventManager");
+var PointerEventManager_1 = require("../utils/InputEventManager/PointerEventManager");
 var Camera_1 = __importDefault(require("../utils/Camera"));
 var PropertyManager_1 = __importDefault(require("../utils/PropertyManager"));
 var DataManager_1 = __importDefault(require("../utils/DataManager"));
@@ -36,7 +37,7 @@ var Game = /** @class */ (function () {
      * @param propertyOption property of game class
      */
     function Game(propertyOption) {
-        this.isplaying = true;
+        var _this_1 = this;
         this.oldTime = 0;
         this.assetsLoader = new AssetLoader_1.default();
         this.Render = new Slim.Render();
@@ -45,6 +46,7 @@ var Game = /** @class */ (function () {
         this.propertyManager = new PropertyManager_1.default();
         this.eventEmitter = new EventEmitter_1.default(this);
         this.isReady = false;
+        this._isplaying = true;
         /**
          * public method to set an event
          * @param event name of event to add
@@ -116,6 +118,7 @@ var Game = /** @class */ (function () {
          */
         this.allProperties = this.propertyManager.allProperties.bind(this.propertyManager);
         this.keyboardEvent = new InputEventManager_1.KeyboardEventManager(this);
+        this.pointerEventDetector = new PointerEventManager_1.PointerEventDetector();
         /**
          * public method to register a key combination from the keyboard
          * @param keyCombination the key combination to register
@@ -137,7 +140,18 @@ var Game = /** @class */ (function () {
         this.canvas = propertyOption.canvas;
         this.graphic = this.canvas.getContext("2d");
         this.Updater = new Slim.Updater(this.canvas, this, this, this.Storage, this.Render);
+        this.pointerEvent = new InputEventManager_1.PointerEventManager(this.canvas, this, function (event) { return _this_1.pointerEventDetector.inputEvent = event; });
     }
+    Object.defineProperty(Game.prototype, "isplaying", {
+        get: function () {
+            return this._isplaying;
+        },
+        set: function (value) {
+            this._isplaying = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Game.prototype, "tree", {
         /**
          * public getter to character tree structure
@@ -181,6 +195,12 @@ var Game = /** @class */ (function () {
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
         var ctx = canvas.getContext('2d');
+        ctx.constructor.prototype.isTextInPath = function (region, x, y) {
+            var _this = this;
+            _this.beginPath();
+            _this.rect(region.x, region.y, region.w, region.h);
+            return _this.isPointInPath(x, y);
+        };
         ctx.scale(dpr, dpr);
         return ctx;
     };
@@ -189,7 +209,7 @@ var Game = /** @class */ (function () {
      * @param time number of second since the browser was last rendered
      */
     Game.prototype.draw = function (time) {
-        var _this = this;
+        var _this_1 = this;
         if (this.isplaying) {
             var dt_1 = (time - this.oldTime) / 1000;
             this.oldTime = time;
@@ -197,14 +217,23 @@ var Game = /** @class */ (function () {
             this.canvas.style.backgroundColor = this.get("background color").toString();
             this.assetsLoader.isAssetsLoaded()
                 .then(function () {
-                if (!_this.isReady) {
-                    _this.eventEmitter.emit("ready");
-                    _this.isReady = true;
+                if (!_this_1.isReady) {
+                    _this_1.eventEmitter.emit("ready");
+                    _this_1.isReady = true;
                 }
-                _this.graphic.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
-                _this.eventEmitter.emit("update", dt_1);
-                _this.Updater.update(dt_1);
-                _this.Render.render(_this.graphic, new math_1.Vector2(0, 0), new math_1.Vector2(1, 1), 0);
+                _this_1.graphic.clearRect(0, 0, _this_1.canvas.width, _this_1.canvas.height);
+                _this_1.eventEmitter.emit("update", dt_1);
+                _this_1.Updater.update(dt_1);
+                _this_1.Render.render(_this_1.graphic, new math_1.Vector2(0, 0), new math_1.Vector2(1, 1), 0);
+                if (_this_1.pointerEventDetector.characterDetected != null && _this_1.pointerEventDetector.inputEvent != null) {
+                    _this_1.pointerEventDetector.characterDetected.emit("input", _this_1.pointerEventDetector.inputEvent);
+                }
+                else {
+                    if (_this_1.pointerEventDetector.inputEvent != null)
+                        _this_1.emit("input", _this_1.pointerEventDetector.inputEvent);
+                }
+                _this_1.pointerEventDetector.characterDetected = null;
+                _this_1.pointerEventDetector.inputEvent = null;
             });
         }
     };

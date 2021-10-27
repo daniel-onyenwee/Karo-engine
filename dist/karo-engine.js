@@ -54,6 +54,7 @@ var Slim = __importStar(__webpack_require__(/*! ../utils/slim */ "./src/utils/sl
 var math_1 = __webpack_require__(/*! ./math */ "./src/libs/math/index.ts");
 var AssetLoader_1 = __importDefault(__webpack_require__(/*! ../utils/AssetLoader */ "./src/utils/AssetLoader.ts"));
 var InputEventManager_1 = __webpack_require__(/*! ../utils/InputEventManager */ "./src/utils/InputEventManager/index.ts");
+var PointerEventManager_1 = __webpack_require__(/*! ../utils/InputEventManager/PointerEventManager */ "./src/utils/InputEventManager/PointerEventManager.ts");
 var Camera_1 = __importDefault(__webpack_require__(/*! ../utils/Camera */ "./src/utils/Camera.ts"));
 var PropertyManager_1 = __importDefault(__webpack_require__(/*! ../utils/PropertyManager */ "./src/utils/PropertyManager.ts"));
 var DataManager_1 = __importDefault(__webpack_require__(/*! ../utils/DataManager */ "./src/utils/DataManager.ts"));
@@ -64,7 +65,7 @@ var Game = /** @class */ (function () {
      * @param propertyOption property of game class
      */
     function Game(propertyOption) {
-        this.isplaying = true;
+        var _this_1 = this;
         this.oldTime = 0;
         this.assetsLoader = new AssetLoader_1.default();
         this.Render = new Slim.Render();
@@ -73,6 +74,7 @@ var Game = /** @class */ (function () {
         this.propertyManager = new PropertyManager_1.default();
         this.eventEmitter = new EventEmitter_1.default(this);
         this.isReady = false;
+        this._isplaying = true;
         /**
          * public method to set an event
          * @param event name of event to add
@@ -144,6 +146,7 @@ var Game = /** @class */ (function () {
          */
         this.allProperties = this.propertyManager.allProperties.bind(this.propertyManager);
         this.keyboardEvent = new InputEventManager_1.KeyboardEventManager(this);
+        this.pointerEventDetector = new PointerEventManager_1.PointerEventDetector();
         /**
          * public method to register a key combination from the keyboard
          * @param keyCombination the key combination to register
@@ -165,7 +168,18 @@ var Game = /** @class */ (function () {
         this.canvas = propertyOption.canvas;
         this.graphic = this.canvas.getContext("2d");
         this.Updater = new Slim.Updater(this.canvas, this, this, this.Storage, this.Render);
+        this.pointerEvent = new InputEventManager_1.PointerEventManager(this.canvas, this, function (event) { return _this_1.pointerEventDetector.inputEvent = event; });
     }
+    Object.defineProperty(Game.prototype, "isplaying", {
+        get: function () {
+            return this._isplaying;
+        },
+        set: function (value) {
+            this._isplaying = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Game.prototype, "tree", {
         /**
          * public getter to character tree structure
@@ -209,6 +223,12 @@ var Game = /** @class */ (function () {
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
         var ctx = canvas.getContext('2d');
+        ctx.constructor.prototype.isTextInPath = function (region, x, y) {
+            var _this = this;
+            _this.beginPath();
+            _this.rect(region.x, region.y, region.w, region.h);
+            return _this.isPointInPath(x, y);
+        };
         ctx.scale(dpr, dpr);
         return ctx;
     };
@@ -217,7 +237,7 @@ var Game = /** @class */ (function () {
      * @param time number of second since the browser was last rendered
      */
     Game.prototype.draw = function (time) {
-        var _this = this;
+        var _this_1 = this;
         if (this.isplaying) {
             var dt_1 = (time - this.oldTime) / 1000;
             this.oldTime = time;
@@ -225,14 +245,23 @@ var Game = /** @class */ (function () {
             this.canvas.style.backgroundColor = this.get("background color").toString();
             this.assetsLoader.isAssetsLoaded()
                 .then(function () {
-                if (!_this.isReady) {
-                    _this.eventEmitter.emit("ready");
-                    _this.isReady = true;
+                if (!_this_1.isReady) {
+                    _this_1.eventEmitter.emit("ready");
+                    _this_1.isReady = true;
                 }
-                _this.graphic.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
-                _this.eventEmitter.emit("update", dt_1);
-                _this.Updater.update(dt_1);
-                _this.Render.render(_this.graphic, new math_1.Vector2(0, 0), new math_1.Vector2(1, 1), 0);
+                _this_1.graphic.clearRect(0, 0, _this_1.canvas.width, _this_1.canvas.height);
+                _this_1.eventEmitter.emit("update", dt_1);
+                _this_1.Updater.update(dt_1);
+                _this_1.Render.render(_this_1.graphic, new math_1.Vector2(0, 0), new math_1.Vector2(1, 1), 0);
+                if (_this_1.pointerEventDetector.characterDetected != null && _this_1.pointerEventDetector.inputEvent != null) {
+                    _this_1.pointerEventDetector.characterDetected.emit("input", _this_1.pointerEventDetector.inputEvent);
+                }
+                else {
+                    if (_this_1.pointerEventDetector.inputEvent != null)
+                        _this_1.emit("input", _this_1.pointerEventDetector.inputEvent);
+                }
+                _this_1.pointerEventDetector.characterDetected = null;
+                _this_1.pointerEventDetector.inputEvent = null;
             });
         }
     };
@@ -342,7 +371,7 @@ var Arc = /** @class */ (function (_super) {
             graphics.translate(-this.displayPosition.x, -this.displayPosition.y);
             graphics.globalAlpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
             graphics.shadowBlur = this.get("shadow blur");
-            graphics.shadowColor = this.get("color").toString();
+            graphics.shadowColor = this.get("shadow color").toString();
             graphics.shadowOffsetX = this.get("shadow offset").x;
             graphics.shadowOffsetY = this.get("shadow offset").y;
             graphics.beginPath();
@@ -358,6 +387,17 @@ var Arc = /** @class */ (function (_super) {
                 graphics.stroke();
             }
             graphics.restore();
+            var pointerEvent = this.game.pointerEventDetector.inputEvent;
+            if (pointerEvent != null) {
+                var inPoint = graphics.isPointInPath(pointerEvent.position.x, pointerEvent.position.y) ?
+                    true : graphics.isPointInStroke(pointerEvent.position.x, pointerEvent.position.y) ?
+                    true : false;
+                var alpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
+                var color = this.get("color");
+                if (inPoint && alpha > 0 && color.alpha > 0) {
+                    this.game.pointerEventDetector.characterDetected = this;
+                }
+            }
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation);
         }
     };
@@ -442,7 +482,7 @@ var Box = /** @class */ (function (_super) {
             graphics.translate(-this.displayPosition.x, -this.displayPosition.y);
             graphics.globalAlpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
             graphics.shadowBlur = this.get("shadow blur");
-            graphics.shadowColor = this.get("color").toString();
+            graphics.shadowColor = this.get("shadow color").toString();
             graphics.shadowOffsetX = this.get("shadow offset").x;
             graphics.shadowOffsetY = this.get("shadow offset").y;
             graphics.lineWidth = this.get("line width");
@@ -457,6 +497,17 @@ var Box = /** @class */ (function (_super) {
             else if (this.get("fill") == false)
                 graphics.stroke();
             graphics.restore();
+            var pointerEvent = this.game.pointerEventDetector.inputEvent;
+            if (pointerEvent != null) {
+                var inPoint = graphics.isPointInPath(pointerEvent.position.x, pointerEvent.position.y) ?
+                    true : graphics.isPointInStroke(pointerEvent.position.x, pointerEvent.position.y) ?
+                    true : false;
+                var alpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
+                var color = this.get("color");
+                if (inPoint && alpha > 0 && color.alpha > 0) {
+                    this.game.pointerEventDetector.characterDetected = this;
+                }
+            }
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation);
         }
     };
@@ -917,6 +968,17 @@ var Image = /** @class */ (function (_super) {
                 }
             }
             graphics.restore();
+            var pointerEvent = this.game.pointerEventDetector.inputEvent;
+            if (pointerEvent != null) {
+                var inPoint = graphics.isPointInPath(pointerEvent.position.x, pointerEvent.position.y) ?
+                    true : graphics.isPointInStroke(pointerEvent.position.x, pointerEvent.position.y) ?
+                    true : false;
+                var alpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
+                var color = this.get("color");
+                if (inPoint && alpha > 0 && color.alpha > 0) {
+                    this.game.pointerEventDetector.characterDetected = this;
+                }
+            }
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation);
         }
     };
@@ -1220,7 +1282,7 @@ var Text = /** @class */ (function (_super) {
             graphics.translate(-this.displayPosition.x, -this.displayPosition.y);
             graphics.globalAlpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
             graphics.shadowBlur = this.get("shadow blur");
-            graphics.shadowColor = this.get("color").toString();
+            graphics.shadowColor = this.get("shadow color").toString();
             graphics.shadowOffsetX = this.get("shadow offset").x;
             graphics.shadowOffsetY = this.get("shadow offset").y;
             graphics.font = this.get("font style") + " " + this.get("font variant") + " " + this.get("font weight") + " " + this.get("font size") + "px " + this.get("font family");
@@ -1235,7 +1297,37 @@ var Text = /** @class */ (function (_super) {
                 graphics.strokeStyle = this.get("color").toString();
                 graphics.strokeText(this.get("text"), this.displayPosition.x - this.game.offset.x, this.displayPosition.y - this.game.offset.y);
             }
+            var textWidth = graphics.measureText(this.get("text")).width;
+            var regionX = (this.displayPosition.x - this.game.offset.x) - textWidth * 0.5;
+            var regionY = (this.displayPosition.x - this.game.offset.x) - this.get("font size") / 2;
+            if (graphics.textAlign == "center")
+                regionX = (this.displayPosition.x - this.game.offset.x) - textWidth * 0.5;
+            else if (graphics.textAlign == "end" || graphics.textAlign == "right")
+                regionX = (this.displayPosition.x - this.game.offset.x) - textWidth;
+            else if (graphics.textAlign == "start" || graphics.textAlign == "left")
+                regionX = (this.displayPosition.x - this.game.offset.x);
+            if (graphics.textBaseline == "middle")
+                regionY = (this.displayPosition.x - this.game.offset.x) - this.get("font size") / 2;
+            else if (graphics.textBaseline == "top" || graphics.textBaseline == "hanging")
+                regionY = (this.displayPosition.x - this.game.offset.x);
+            else if (graphics.textBaseline == "bottom" || graphics.textBaseline == "alphabetic" || graphics.textBaseline == "ideographic")
+                regionY = (this.displayPosition.x - this.game.offset.x) - this.get("font size");
+            var region = {
+                x: regionX,
+                y: regionY,
+                w: textWidth,
+                h: this.get("font size")
+            };
             graphics.restore();
+            var pointerEvent = this.game.pointerEventDetector.inputEvent;
+            if (pointerEvent != null) {
+                var inPoint = Object(graphics).isTextInPath(region, pointerEvent.position.x, pointerEvent.position.y);
+                var alpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
+                var color = this.get("color");
+                if (inPoint && alpha > 0 && color.alpha > 0) {
+                    this.game.pointerEventDetector.characterDetected = this;
+                }
+            }
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation);
         }
     };
@@ -2356,6 +2448,322 @@ exports["default"] = KeyboardEventManager;
 
 /***/ }),
 
+/***/ "./src/utils/InputEventManager/PointerEventManager.ts":
+/*!************************************************************!*\
+  !*** ./src/utils/InputEventManager/PointerEventManager.ts ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PointerInputEvent = exports.PointerEventDetector = void 0;
+var math_1 = __webpack_require__(/*! ../../libs/math */ "./src/libs/math/index.ts");
+/**
+ * 🛠 utility class use to detect mouse, pen and touch event
+ */
+var PointerEventDetector = /** @class */ (function () {
+    function PointerEventDetector() {
+        this._inputEvent = null;
+        this._characterDetected = null;
+    }
+    Object.defineProperty(PointerEventDetector.prototype, "inputEvent", {
+        get: function () {
+            return this._inputEvent;
+        },
+        set: function (inputEvent) {
+            this._inputEvent = inputEvent;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PointerEventDetector.prototype, "characterDetected", {
+        get: function () {
+            return this._characterDetected;
+        },
+        set: function (characterDetected) {
+            this._characterDetected = characterDetected;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return PointerEventDetector;
+}());
+exports.PointerEventDetector = PointerEventDetector;
+var PointerInputEvent = /** @class */ (function () {
+    /**
+     * 🛠 utility class that contain information about a pointer(mouse, pen, touch) event
+     * @param device indicates the device type that caused the event (mouse, pen, touch, etc.)
+     * @param pressure the normalized pressure of the pointer input in the range of 0 to 1, where 0 and 1 represent the minimum and maximum pressure the hardware is capable of detecting, respectively
+     * @param height the height (magnitude on the Y axis), in CSS pixels, of the contact geometry of the pointer
+     * @param width the width (magnitude on the X axis), in CSS pixels, of the contact geometry of the pointer
+     * @param position the X-Y position on the screen the device touch/hit
+     * @param otherPosition a vector type array of the other position the device touch/hit after the first touch/hit
+     * @param tiltPosition a vector object containing the plane angle (in degrees, in the range of -90 to 90) between the Y–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the Y axis as the `y` value and between the X–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the X axis as the `x` value
+     * @param twist the clockwise rotation of the pointer (e.g. pen stylus) around its major axis in degrees, with a value in the range 0 to 359
+     * @param time the number of time in seconds the event happed
+     * @param type indicates the type of event canused device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
+     */
+    function PointerInputEvent(device, pressure, height, width, position, otherPosition, tiltPosition, twist, time, type) {
+        this._device = "mouse";
+        this._otherPosition = Array();
+        this._tiltPosition = new math_1.Vector2();
+        this._twist = 0;
+        this._device = device;
+        this._pressure = pressure;
+        this._height = height;
+        this._width = width;
+        this._position = position;
+        this._otherPosition = otherPosition;
+        this._tiltPosition = tiltPosition;
+        this._twist = twist;
+        this._time = time;
+        this._type = type;
+    }
+    Object.defineProperty(PointerInputEvent.prototype, "device", {
+        /**
+         * indicates the device type that caused the event (mouse, pen, touch, etc.)
+         */
+        get: function () {
+            return this._device;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PointerInputEvent.prototype, "pressure", {
+        /**
+         * the normalized pressure of the pointer input in the range of 0 to 1, where 0 and 1 represent the minimum and maximum pressure the hardware is capable of detecting, respectively
+         */
+        get: function () {
+            return this._pressure;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PointerInputEvent.prototype, "height", {
+        /**
+         * the height (magnitude on the Y axis), in CSS pixels, of the contact geometry of the pointer
+         */
+        get: function () {
+            return this._height;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PointerInputEvent.prototype, "width", {
+        /**
+         * the width (magnitude on the X axis), in CSS pixels, of the contact geometry of the pointer
+         */
+        get: function () {
+            return this._width;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PointerInputEvent.prototype, "position", {
+        /**
+         * the X-Y position on the screen the device touch/hit
+         */
+        get: function () {
+            return this._position;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PointerInputEvent.prototype, "otherPosition", {
+        /**
+         * a vector type array of the other position the device touch/hit after the first touch/hit
+         */
+        get: function () {
+            return this._otherPosition;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PointerInputEvent.prototype, "tiltPosition", {
+        /**
+         * a vector object containing the plane angle (in degrees, in the range of -90 to 90) between the Y–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the Y axis as the `y` value and between the X–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the X axis as the `x` value
+         */
+        get: function () {
+            return this._tiltPosition;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PointerInputEvent.prototype, "twist", {
+        /**
+         * the clockwise rotation of the pointer (e.g. pen stylus) around its major axis in degrees, with a value in the range 0 to 359
+         */
+        get: function () {
+            return this._twist;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PointerInputEvent.prototype, "time", {
+        /**
+         * the number of time in seconds the event happed
+         */
+        get: function () {
+            return this._time;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PointerInputEvent.prototype, "type", {
+        /**
+         * indicates the type of event canused device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
+         */
+        get: function () {
+            return this._type;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return PointerInputEvent;
+}());
+exports.PointerInputEvent = PointerInputEvent;
+var PointerEventManager = /** @class */ (function () {
+    /**
+     * 🛠 utility class to mouse, pen and touch event
+     * @param canvas instance of the `HTMLCanvasElement`
+     * @param game instance of the `Game` object
+     * @param gameInputHandle callback function called when the event is trigged
+     */
+    function PointerEventManager(canvas, game, gameInputHandle) {
+        this.swipeStartPosition = new math_1.Vector2();
+        this.swipeStarted = false;
+        this.isPointerPressed = false;
+        this.device = "mouse";
+        this.position = new math_1.Vector2();
+        this.otherPosition = Array();
+        this.tiltPosition = new math_1.Vector2();
+        this.isDraging = false;
+        this.twist = 0;
+        this.canvas = canvas;
+        this.game = game;
+        this.gameInputHandle = gameInputHandle;
+        this.setEventListeners();
+    }
+    /**
+     * private method to handle browser pointer event
+     * @param event instance of the `PointerEvent` object
+     */
+    PointerEventManager.prototype.pointerEventHandle = function (event) {
+        var time = 0, type = "move";
+        this.device = event.pointerType;
+        this.position.setX = event.clientX - this.canvas.getBoundingClientRect().left;
+        this.position.setY = event.clientY - -this.canvas.getBoundingClientRect().top;
+        time = event.timeStamp / 1000;
+        this.height = event.height;
+        this.width = event.width;
+        this.pressure = event.pressure;
+        this.tiltPosition.setY = event.tiltY;
+        this.tiltPosition.setX = event.tiltX;
+        this.twist = event.twist;
+        if (event.type == "pointermove" || event.type == "pointerover") {
+            if (this.isPointerPressed) {
+                type = "drag";
+                this.isDraging = true;
+            }
+            else if (!this.isPointerPressed)
+                type = "move";
+        }
+        if (event.type == "pointerdown") {
+            type = "press";
+            this.isPointerPressed = true;
+            if (event.button == 2) {
+                type = "right press";
+                this.isPointerPressed = false;
+            }
+        }
+        if (event.type == "pointerup") {
+            if (!this.isDraging) {
+                type = "release";
+                if (event.button == 2)
+                    type = "right release";
+            }
+            this.isPointerPressed = false;
+            this.isDraging = false;
+        }
+        this.gameInputHandle(new PointerInputEvent(this.device, this.pressure, this.height, this.width, this.position, this.otherPosition, this.tiltPosition, this.twist, time, type));
+    };
+    /**
+     * private method to handle touch device swipe event
+     * @eventName name of the touch event trigged
+     * @param event instance of the `TouchEvent` object
+     */
+    PointerEventManager.prototype.swipeEventHandle = function (eventName, event) {
+        var swipePositionDiff = new math_1.Vector2(), type = "move", time = event.timeStamp / 1000;
+        if (eventName == "touchstart") {
+            this.swipeStartPosition.setX = event.touches[0].clientX;
+            this.swipeStartPosition.setY = event.touches[0].clientY;
+            this.position = this.swipeStartPosition;
+            this.swipeStarted = true;
+        }
+        else if (eventName == "touchmove") {
+            if (this.swipeStarted) {
+                var otherSwipePosition = new math_1.Vector2(event.touches[0].clientX, event.touches[0].clientY);
+                this.otherPosition = Array();
+                this.otherPosition.push(otherSwipePosition);
+                swipePositionDiff = this.swipeStartPosition.substr(otherSwipePosition);
+                swipePositionDiff = new math_1.Vector2(Math.abs(swipePositionDiff.x), Math.abs(swipePositionDiff.y));
+                if (swipePositionDiff.x > swipePositionDiff.y) {
+                    if (swipePositionDiff.x > 0)
+                        type = "swipe right";
+                    else
+                        type = "swipe left";
+                }
+                else {
+                    if (swipePositionDiff.y > 0)
+                        type = "swipe down";
+                    else
+                        type = "swipe up";
+                }
+                this.swipeStartPosition = new math_1.Vector2();
+                this.swipeStarted = false;
+            }
+        }
+        this.gameInputHandle(new PointerInputEvent(this.device, this.pressure, this.height, this.width, this.position, this.otherPosition, this.tiltPosition, this.twist, time, type));
+    };
+    /**
+     * public method to set the mouse, pen and touch event listeners
+     */
+    PointerEventManager.prototype.setEventListeners = function () {
+        var _this = this;
+        this.canvas.ondragstart = function () { return false; };
+        this.canvas.style.touchAction = "none";
+        this.canvas.addEventListener("touchstart", function (ev) {
+            if (_this.game.isplaying)
+                _this.swipeEventHandle("touchstart", ev);
+        }, false);
+        this.canvas.addEventListener("touchmove", function (ev) {
+            if (_this.game.isplaying)
+                _this.swipeEventHandle("touchmove", ev);
+        }, false);
+        this.canvas.addEventListener("pointerdown", function (ev) {
+            if (_this.game.isplaying)
+                _this.pointerEventHandle(ev);
+        });
+        this.canvas.addEventListener("pointermove", function (ev) {
+            if (_this.game.isplaying)
+                _this.pointerEventHandle(ev);
+        });
+        this.canvas.addEventListener("pointerover", function (ev) {
+            if (_this.game.isplaying)
+                _this.pointerEventHandle(ev);
+        });
+        this.canvas.addEventListener("pointerup", function (ev) {
+            if (_this.game.isplaying)
+                _this.pointerEventHandle(ev);
+        });
+    };
+    return PointerEventManager;
+}());
+exports["default"] = PointerEventManager;
+
+
+/***/ }),
+
 /***/ "./src/utils/InputEventManager/index.ts":
 /*!**********************************************!*\
   !*** ./src/utils/InputEventManager/index.ts ***!
@@ -2367,9 +2775,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.KeyboardEventManager = void 0;
+exports.PointerEventManager = exports.KeyboardEventManager = void 0;
 var KeyboardEventManager_1 = __importDefault(__webpack_require__(/*! ./KeyboardEventManager */ "./src/utils/InputEventManager/KeyboardEventManager.ts"));
 exports.KeyboardEventManager = KeyboardEventManager_1.default;
+var PointerEventManager_1 = __importDefault(__webpack_require__(/*! ./PointerEventManager */ "./src/utils/InputEventManager/PointerEventManager.ts"));
+exports.PointerEventManager = PointerEventManager_1.default;
 
 
 /***/ }),

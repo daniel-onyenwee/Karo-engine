@@ -1,5 +1,6 @@
 import { Container } from "."
 import { Game } from ".."
+import { PointerInputEvent } from "../../utils/InputEventManager/PointerEventManager"
 import { Vector2, Color } from "../math"
 import { ContainerPropertyOption } from "./Container"
 
@@ -111,6 +112,18 @@ export default class Image extends Container {
                 }
             }
             graphics.restore()
+
+            let pointerEvent:PointerInputEvent|null = this.game.pointerEventDetector.inputEvent
+            if (pointerEvent != null) {
+                let inPoint = graphics.isPointInPath(pointerEvent.position.x, pointerEvent.position.y) ? 
+                    true : graphics.isPointInStroke(pointerEvent.position.x, pointerEvent.position.y) ? 
+                    true : false
+                let alpha:number = (this.parent instanceof Game ? (this.get("opacity") as number) : (this.parent.get("opacity") as number) * (this.get("opacity") as number))
+                let color:Color = (this.get("color") as Color)
+                if (inPoint && alpha > 0 && color.alpha > 0) {
+                    this.game.pointerEventDetector.characterDetected = this
+                }
+            }
 
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation)
         }
