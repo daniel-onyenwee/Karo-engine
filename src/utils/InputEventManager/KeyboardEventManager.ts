@@ -7,7 +7,7 @@ export default class KeyboardEventManager {
 
     /**
      * 🛠 utility class to handle the keyboard input from the user
-     * @param game insatance of the `Game`
+     * @param game instance of the `Game`
     */
     constructor(game:Game) {
         this.game = game
@@ -34,7 +34,7 @@ export default class KeyboardEventManager {
      * @param ev Javascript object that describe the user interaction with the keyboard
      */
     public onKeyPress(ev:KeyboardEvent): void {
-        let notAceptedkey:Set<string> = new Set<string>([
+        let notAccepted:Set<string> = new Set<string>([
             "Shift",
             "Control",
             "Alt"
@@ -46,7 +46,7 @@ export default class KeyboardEventManager {
             keyCombination = keyCombination.concat("SHIFT+".toUpperCase())
         if (ev.altKey)
             keyCombination = keyCombination.concat("ALT+".toUpperCase())
-        if (!notAceptedkey.has(ev.key)) 
+        if (!notAccepted.has(ev.key)) 
             keyCombination = keyCombination.concat(ev.key.toUpperCase())
         if (this.keyMap.has(keyCombination))
             console.log(keyCombination)

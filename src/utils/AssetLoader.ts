@@ -179,7 +179,7 @@ export default class AssetsLoader {
     }
     
     /**
-     * public method to check if all the asset is looaded 
+     * public method to check if all the asset is loaded 
      */
     public async isAssetsLoaded(): Promise<void> {
         this.assetsToLoad.forEach(assetData => {

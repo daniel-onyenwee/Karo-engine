@@ -12,7 +12,7 @@ interface ColorOption {
      */
     blue:number
     /**
-     * the range of transparence of the color
+     * the range of transparency of the color
      */
     alpha: number
 }
@@ -31,7 +31,7 @@ export default class Color {
      * @param red the saturation of red in the color
      * @param green the saturation of green in the color
      * @param blue the saturation of blue in the color
-     * @param alpha the range of transparence of the color
+     * @param alpha the range of transparency of the color
      */
     constructor(red:number = 0, green:number = 0, blue:number = 0, alpha:number = 1) {
         this.red = red

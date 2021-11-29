@@ -44,8 +44,8 @@ var PointerInputEvent = /** @class */ (function () {
      * @param otherPosition a vector type array of the other position the device touch/hit after the first touch/hit
      * @param tiltPosition a vector object containing the plane angle (in degrees, in the range of -90 to 90) between the Y–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the Y axis as the `y` value and between the X–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the X axis as the `x` value
      * @param twist the clockwise rotation of the pointer (e.g. pen stylus) around its major axis in degrees, with a value in the range 0 to 359
-     * @param time the number of time in seconds the event happed
-     * @param type indicates the type of event canused device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
+     * @param time the number of time in seconds the event happen
+     * @param type indicates the type of event caused by the device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
      */
     function PointerInputEvent(device, pressure, height, width, position, otherPosition, tiltPosition, twist, time, type) {
         this._device = "mouse";
@@ -145,7 +145,7 @@ var PointerInputEvent = /** @class */ (function () {
     });
     Object.defineProperty(PointerInputEvent.prototype, "time", {
         /**
-         * the number of time in seconds the event happed
+         * the number of time in seconds the event happen
          */
         get: function () {
             return this._time;
@@ -155,7 +155,7 @@ var PointerInputEvent = /** @class */ (function () {
     });
     Object.defineProperty(PointerInputEvent.prototype, "type", {
         /**
-         * indicates the type of event canused device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
+         * indicates the type of event caused by the device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
          */
         get: function () {
             return this._type;
@@ -181,7 +181,7 @@ var PointerEventManager = /** @class */ (function () {
         this.position = new math_1.Vector2();
         this.otherPosition = Array();
         this.tiltPosition = new math_1.Vector2();
-        this.isDraging = false;
+        this.isDragging = false;
         this.twist = 0;
         this.canvas = canvas;
         this.game = game;
@@ -196,7 +196,7 @@ var PointerEventManager = /** @class */ (function () {
         var time = 0, type = "move";
         this.device = event.pointerType;
         this.position.setX = event.clientX - this.canvas.getBoundingClientRect().left;
-        this.position.setY = event.clientY - -this.canvas.getBoundingClientRect().top;
+        this.position.setY = event.clientY - this.canvas.getBoundingClientRect().top;
         time = event.timeStamp / 1000;
         this.height = event.height;
         this.width = event.width;
@@ -207,7 +207,7 @@ var PointerEventManager = /** @class */ (function () {
         if (event.type == "pointermove" || event.type == "pointerover") {
             if (this.isPointerPressed) {
                 type = "drag";
-                this.isDraging = true;
+                this.isDragging = true;
             }
             else if (!this.isPointerPressed)
                 type = "move";
@@ -221,13 +221,13 @@ var PointerEventManager = /** @class */ (function () {
             }
         }
         if (event.type == "pointerup") {
-            if (!this.isDraging) {
+            if (!this.isDragging) {
                 type = "release";
                 if (event.button == 2)
                     type = "right release";
             }
             this.isPointerPressed = false;
-            this.isDraging = false;
+            this.isDragging = false;
         }
         this.gameInputHandle(new PointerInputEvent(this.device, this.pressure, this.height, this.width, this.position, this.otherPosition, this.tiltPosition, this.twist, time, type));
     };
@@ -239,14 +239,14 @@ var PointerEventManager = /** @class */ (function () {
     PointerEventManager.prototype.swipeEventHandle = function (eventName, event) {
         var swipePositionDiff = new math_1.Vector2(), type = "move", time = event.timeStamp / 1000;
         if (eventName == "touchstart") {
-            this.swipeStartPosition.setX = event.touches[0].clientX;
-            this.swipeStartPosition.setY = event.touches[0].clientY;
+            this.swipeStartPosition.setX = event.touches[0].clientX - this.canvas.getBoundingClientRect().left;
+            this.swipeStartPosition.setY = event.touches[0].clientY - this.canvas.getBoundingClientRect().top;
             this.position = this.swipeStartPosition;
             this.swipeStarted = true;
         }
         else if (eventName == "touchmove") {
             if (this.swipeStarted) {
-                var otherSwipePosition = new math_1.Vector2(event.touches[0].clientX, event.touches[0].clientY);
+                var otherSwipePosition = new math_1.Vector2(event.touches[0].clientX - this.canvas.getBoundingClientRect().left, event.touches[0].clientY - this.canvas.getBoundingClientRect().left);
                 this.otherPosition = Array();
                 this.otherPosition.push(otherSwipePosition);
                 swipePositionDiff = this.swipeStartPosition.substr(otherSwipePosition);

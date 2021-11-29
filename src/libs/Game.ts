@@ -57,7 +57,7 @@ export default class Game {
     /**
      * public method to set an event
      * @param event name of event to add
-     * @param callback callback function to call when the event is emiited
+     * @param callback callback function to call when the event is emitted
      */
     public on = this.eventEmitter.on.bind(this.eventEmitter)
 
@@ -139,7 +139,7 @@ export default class Game {
     }
 
     /**
-     * public method to get all the character propertries
+     * public method to get all the character properties
      * @returns return an `Array` of type object
      */
     public allProperties = this.propertyManager.allProperties.bind(this.propertyManager)
@@ -213,12 +213,15 @@ export default class Game {
         canvas.width = rect.width * dpr
         canvas.height = rect.height * dpr
         var ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-        ctx.constructor.prototype.isTextInPath = function(region:{ x: number, y: number, h: number, w: number }, x: number, y: number): boolean {
+        ctx.constructor.prototype.isGraphicInPath = function(x: number, y: number, region?:{ x: number, y: number, h: number, w: number }): boolean {
             let _this:CanvasRenderingContext2D = this
-            _this.beginPath()
-            _this.rect(region.x, region.y, region.w, region.h)
-            return _this.isPointInPath(x, y)
+            if (region != undefined) {
+                _this.beginPath()
+                _this.rect(region.x, region.y, region.w, region.h)
+            }
+            return _this.isPointInPath(x, y) ? true : _this.isPointInStroke(x, y) ? true : false
         }
+        ctx.constructor.prototype.devicePixelRatio = dpr
         ctx.scale(dpr, dpr)
         return ctx
     }    

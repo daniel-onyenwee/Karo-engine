@@ -16,7 +16,7 @@ export default class EventEmitter {
     /**
      * public method to set an event
      * @param event name of event to add
-     * @param callback callback function to call when the event is emiited
+     * @param callback callback function to call when the event is emitted
      */
     public on(event:string, callback:(...args:Array<any>) => void) {
         this.eventMap.set(event, callback)

@@ -98,7 +98,7 @@ export default class DataManager {
     /**
      * public method to get a data stored
      * @param key key used to store the data
-     * @returns if the data exist return the data else retun `null`
+     * @returns if the data exist return the data else return `null`
      */
     public get(key:string):DataInput|null {
         let id:number|undefined = this.keyMap.get(key)

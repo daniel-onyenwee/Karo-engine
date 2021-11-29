@@ -61,7 +61,7 @@ var Text = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Text.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add(this.get("position"));
             this.displayScale = displayScale.multiply(this.get("scale"));
             this.displayRotation = displayRotation + this.get("rotation");

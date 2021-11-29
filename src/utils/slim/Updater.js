@@ -37,8 +37,8 @@ var Updater = /** @class */ (function () {
         var characterList = this.storage.list();
         var predefineCharacterList = this.storage.listPredefineCharacter();
         predefineCharacterList.forEach(function (character) {
-            if (!character.get("is initalize")) {
-                character.initalize(_this.canvas, _this.game, _this.character);
+            if (!character.get("is initialize")) {
+                character.initialize(_this.canvas, _this.game, _this.character);
                 characterList.push(character);
             }
         });

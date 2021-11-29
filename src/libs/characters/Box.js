@@ -55,7 +55,7 @@ var Box = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Box.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add(this.get("position"));
             this.displayScale = displayScale.multiply(this.get("scale"));
             this.displayRotation = displayRotation + this.get("rotation");
@@ -70,28 +70,28 @@ var Box = /** @class */ (function (_super) {
             graphics.shadowOffsetX = this.get("shadow offset").x;
             graphics.shadowOffsetY = this.get("shadow offset").y;
             graphics.lineWidth = this.get("line width");
+            var x = ((this.displayPosition.x) - this.get("width") / 2) - this.game.offset.x;
+            var y = ((this.displayPosition.y) - this.get("height") / 2) - this.game.offset.y;
             graphics.beginPath();
             if (this.get("fill") == true)
                 graphics.fillStyle = this.get("color").toString();
             else if (this.get("fill") == false)
                 graphics.strokeStyle = this.get("color").toString();
-            graphics.rect(((this.displayPosition.x) - this.get("width") / 2) - this.game.offset.x, ((this.displayPosition.y) - this.get("height") / 2) - this.game.offset.y, this.get("width"), this.get("height"));
+            graphics.rect(x, y, this.get("width"), this.get("height"));
             if (this.get("fill") == true)
                 graphics.fill();
             else if (this.get("fill") == false)
                 graphics.stroke();
-            graphics.restore();
             var pointerEvent = this.game.pointerEventDetector.inputEvent;
             if (pointerEvent != null) {
-                var inPoint = graphics.isPointInPath(pointerEvent.position.x, pointerEvent.position.y) ?
-                    true : graphics.isPointInStroke(pointerEvent.position.x, pointerEvent.position.y) ?
-                    true : false;
+                var inPoint = Object(graphics).isGraphicInPath((pointerEvent.position.x + x), (pointerEvent.position.y + y));
                 var alpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
                 var color = this.get("color");
                 if (inPoint && alpha > 0 && color.alpha > 0) {
                     this.game.pointerEventDetector.characterDetected = this;
                 }
             }
+            graphics.restore();
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation);
         }
     };

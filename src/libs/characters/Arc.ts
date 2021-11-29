@@ -58,7 +58,7 @@ export default class Arc extends Container {
      * @param displayRotation actual rotation of the character
      */
     public render(graphics:CanvasRenderingContext2D, displayPosition:Vector2, displayScale:Vector2, displayRotation:number): void {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add((this.get("position") as Vector2))
             this.displayScale = displayScale.multiply((this.get("scale") as Vector2))
             this.displayRotation = displayRotation + (this.get("rotation") as number)

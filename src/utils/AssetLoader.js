@@ -210,7 +210,7 @@ var AssetsLoader = /** @class */ (function () {
             return null;
     };
     /**
-     * public method to check if all the asset is looaded
+     * public method to check if all the asset is loaded
      */
     AssetsLoader.prototype.isAssetsLoaded = function () {
         return __awaiter(this, void 0, void 0, function () {

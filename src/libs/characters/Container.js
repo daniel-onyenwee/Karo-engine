@@ -54,7 +54,7 @@ var Container = /** @class */ (function () {
          */
         this.add = this.Storage.add.bind(this.Storage);
         /**
-         * public method to get all the character propertries
+         * public method to get all the character properties
          * @returns return an `Array` of type object
          */
         this.allProperties = this.propertyManager.allProperties.bind(this.propertyManager);
@@ -68,7 +68,7 @@ var Container = /** @class */ (function () {
         /**
          * public method to set an event
          * @param event name of event to add
-         * @param callback callback function to call when the event is emiited
+         * @param callback callback function to call when the event is emitted
          */
         this.on = this.eventEmitter.on.bind(this.eventEmitter);
         /**
@@ -89,7 +89,7 @@ var Container = /** @class */ (function () {
         this.propertyManager.scheme({
             name: propertyOption.name,
             "is destroyed": { value: false, readonly: true, type: "boolean" },
-            "is initalize": { value: false, readonly: true, type: "boolean" },
+            "is initialize": { value: false, readonly: true, type: "boolean" },
             path: String(),
             opacity: propertyOption.opacity != undefined ? propertyOption.opacity : 1,
             position: propertyOption.position != undefined ? propertyOption.position : new math_1.Vector2(0, 0),
@@ -140,17 +140,17 @@ var Container = /** @class */ (function () {
         configurable: true
     });
     /**
-     * public method to initalize the character
+     * public method to initialize the character
      * @param canvas instance of the `HTMLCanvasElement`
-     * @param game insatance of the `Game`
-     * @param parent parnet character instance of the character
+     * @param game instance of the `Game`
+     * @param parent parent character instance of the character
      */
-    Container.prototype.initalize = function (canvas, game, parent) {
-        if (!this.get("is initalize")) {
+    Container.prototype.initialize = function (canvas, game, parent) {
+        if (!this.get("is initialize")) {
             this._parent = parent;
             this._game = game;
             this.canvas = canvas;
-            this.propertyManager.override("is initalize", true);
+            this.propertyManager.override("is initialize", true);
             this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render);
             this.eventEmitter.emit("init");
         }
@@ -166,7 +166,7 @@ var Container = /** @class */ (function () {
      * @param dt time difference between the previous frame and the current time
      */
     Container.prototype.update = function (dt) {
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
@@ -179,7 +179,7 @@ var Container = /** @class */ (function () {
      * @param displayRotation actual rotation of the character
      */
     Container.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add(this.get("position"));
             this.displayScale = displayScale.multiply(this.get("scale"));
             this.displayRotation = displayRotation + this.get("rotation");

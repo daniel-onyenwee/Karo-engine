@@ -9,7 +9,7 @@ interface LoopPropertyOption {
     time?: number
     play?: boolean
     /**
-     * set character opactiy. default value `1`
+     * set character opacity. default value `1`
      */
     opacity?: number
     /**
@@ -17,7 +17,7 @@ interface LoopPropertyOption {
      */
     visible?: boolean
     /**
-     * specifies the stack level of the caharacter. default value `1`
+     * specifies the stack level of the character. default value `1`
      */
     "z index"?: number
 }
@@ -53,7 +53,7 @@ export default class Loop extends Container {
      * @param dt time difference between the previous frame and the current time
      */
     public update(dt:number): void {
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             if (this.get("play") == true) {
                 [...Array.from(Array(this.get("time")).keys())].forEach((i:number) => {
                     i = i + 1
@@ -76,7 +76,7 @@ export default class Loop extends Container {
      * @param displayRotation actual rotation of the character
      */
     public render(graphics:CanvasRenderingContext2D, displayPosition:Vector2, displayScale:Vector2, displayRotation:number): void {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition
             this.displayScale = displayScale
             this.displayRotation = displayRotation

@@ -48,7 +48,7 @@ var Timer = /** @class */ (function (_super) {
     Timer.prototype.update = function (dt) {
         var waitTime = this.get("wait time");
         var repeat = this.get("repeat");
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             if (this.get("play") == true) {
                 this.currentTime += dt;
                 if (this.currentTime >= waitTime) {
@@ -71,7 +71,7 @@ var Timer = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Timer.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition;
             this.displayScale = displayScale;
             this.displayRotation = displayRotation;

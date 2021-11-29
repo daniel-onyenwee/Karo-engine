@@ -12,7 +12,7 @@ export interface ContainerPropertyOption {
      */
     name: string
     /**
-     * set character opactiy. default value `1`
+     * set character opacity. default value `1`
      */
     opacity?: number
     /**
@@ -32,7 +32,7 @@ export interface ContainerPropertyOption {
      */
     visible?: boolean
     /**
-     * specifies the stack level of the caharacter. default value `1`
+     * specifies the stack level of the character. default value `1`
      */
     "z index"?: number
 }
@@ -79,7 +79,7 @@ export default class Container {
     public add = this.Storage.add.bind(this.Storage)
 
     /**
-     * public method to get all the character propertries
+     * public method to get all the character properties
      * @returns return an `Array` of type object
      */
     public allProperties = this.propertyManager.allProperties.bind(this.propertyManager)
@@ -96,7 +96,7 @@ export default class Container {
     /**
      * public method to set an event
      * @param event name of event to add
-     * @param callback callback function to call when the event is emiited
+     * @param callback callback function to call when the event is emitted
      */
     public on = this.eventEmitter.on.bind(this.eventEmitter)
 
@@ -134,7 +134,7 @@ export default class Container {
         this.propertyManager.scheme({
             name: propertyOption.name,
             "is destroyed": { value: false, readonly: true, type: "boolean" },
-            "is initalize": { value: false, readonly: true, type: "boolean" },
+            "is initialize": { value: false, readonly: true, type: "boolean" },
             path: String(),
             opacity: propertyOption.opacity != undefined ? propertyOption.opacity : 1,
             position: propertyOption.position != undefined ? propertyOption.position : new Vector2(0, 0),
@@ -167,17 +167,17 @@ export default class Container {
     }
 
     /**
-     * public method to initalize the character
+     * public method to initialize the character
      * @param canvas instance of the `HTMLCanvasElement`
-     * @param game insatance of the `Game`
-     * @param parent parnet character instance of the character
+     * @param game instance of the `Game`
+     * @param parent parent character instance of the character
      */
-    public initalize(canvas:HTMLCanvasElement, game:Game, parent:CharacterParentType) { 
-        if (!this.get("is initalize")) {
+    public initialize(canvas:HTMLCanvasElement, game:Game, parent:CharacterParentType) { 
+        if (!this.get("is initialize")) {
             this._parent = parent
             this._game = game
             this.canvas = canvas
-            this.propertyManager.override("is initalize", true)
+            this.propertyManager.override("is initialize", true)
             this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render)
             this.eventEmitter.emit("init")
         }
@@ -195,7 +195,7 @@ export default class Container {
      * @param dt time difference between the previous frame and the current time
      */
      public update(dt:number): void {
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             this.eventEmitter.emit("update", dt)
             this.Updater.update(dt)
         }
@@ -209,7 +209,7 @@ export default class Container {
      * @param displayRotation actual rotation of the character
      */
     public render(graphics:CanvasRenderingContext2D, displayPosition:Vector2, displayScale:Vector2, displayRotation:number): void {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add((this.get("position") as Vector2))
             this.displayScale = displayScale.multiply((this.get("scale") as Vector2))
             this.displayRotation = displayRotation + (this.get("rotation") as number)

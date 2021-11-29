@@ -54,7 +54,7 @@ var Image = /** @class */ (function (_super) {
      * @param dt time difference between the previous frame and the current time
      */
     Image.prototype.update = function (dt) {
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             if (this.get("source").length == 1) {
                 this.currentIndex = 0;
             }
@@ -78,7 +78,7 @@ var Image = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Image.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add(this.get("position"));
             this.displayScale = displayScale.multiply(this.get("scale"));
             this.displayRotation = displayRotation + this.get("rotation");

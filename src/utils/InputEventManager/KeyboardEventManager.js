@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var KeyboardEventManager = /** @class */ (function () {
     /**
      * 🛠 utility class to handle the keyboard input from the user
-     * @param game insatance of the `Game`
+     * @param game instance of the `Game`
     */
     function KeyboardEventManager(game) {
         this.keyMap = new Map();
@@ -28,7 +28,7 @@ var KeyboardEventManager = /** @class */ (function () {
      * @param ev Javascript object that describe the user interaction with the keyboard
      */
     KeyboardEventManager.prototype.onKeyPress = function (ev) {
-        var notAceptedkey = new Set([
+        var notAccepted = new Set([
             "Shift",
             "Control",
             "Alt"
@@ -40,7 +40,7 @@ var KeyboardEventManager = /** @class */ (function () {
             keyCombination = keyCombination.concat("SHIFT+".toUpperCase());
         if (ev.altKey)
             keyCombination = keyCombination.concat("ALT+".toUpperCase());
-        if (!notAceptedkey.has(ev.key))
+        if (!notAccepted.has(ev.key))
             keyCombination = keyCombination.concat(ev.key.toUpperCase());
         if (this.keyMap.has(keyCombination))
             console.log(keyCombination);

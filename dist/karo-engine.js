@@ -78,7 +78,7 @@ var Game = /** @class */ (function () {
         /**
          * public method to set an event
          * @param event name of event to add
-         * @param callback callback function to call when the event is emiited
+         * @param callback callback function to call when the event is emitted
          */
         this.on = this.eventEmitter.on.bind(this.eventEmitter);
         /**
@@ -141,7 +141,7 @@ var Game = /** @class */ (function () {
         */
         this.has = this.Storage.has.bind(this.Storage);
         /**
-         * public method to get all the character propertries
+         * public method to get all the character properties
          * @returns return an `Array` of type object
          */
         this.allProperties = this.propertyManager.allProperties.bind(this.propertyManager);
@@ -223,12 +223,15 @@ var Game = /** @class */ (function () {
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
         var ctx = canvas.getContext('2d');
-        ctx.constructor.prototype.isTextInPath = function (region, x, y) {
+        ctx.constructor.prototype.isGraphicInPath = function (x, y, region) {
             var _this = this;
-            _this.beginPath();
-            _this.rect(region.x, region.y, region.w, region.h);
-            return _this.isPointInPath(x, y);
+            if (region != undefined) {
+                _this.beginPath();
+                _this.rect(region.x, region.y, region.w, region.h);
+            }
+            return _this.isPointInPath(x, y) ? true : _this.isPointInStroke(x, y) ? true : false;
         };
+        ctx.constructor.prototype.devicePixelRatio = dpr;
         ctx.scale(dpr, dpr);
         return ctx;
     };
@@ -360,7 +363,7 @@ var Arc = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Arc.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add(this.get("position"));
             this.displayScale = displayScale.multiply(this.get("scale"));
             this.displayRotation = displayRotation + this.get("rotation");
@@ -471,7 +474,7 @@ var Box = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Box.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add(this.get("position"));
             this.displayScale = displayScale.multiply(this.get("scale"));
             this.displayRotation = displayRotation + this.get("rotation");
@@ -486,28 +489,28 @@ var Box = /** @class */ (function (_super) {
             graphics.shadowOffsetX = this.get("shadow offset").x;
             graphics.shadowOffsetY = this.get("shadow offset").y;
             graphics.lineWidth = this.get("line width");
+            var x = ((this.displayPosition.x) - this.get("width") / 2) - this.game.offset.x;
+            var y = ((this.displayPosition.y) - this.get("height") / 2) - this.game.offset.y;
             graphics.beginPath();
             if (this.get("fill") == true)
                 graphics.fillStyle = this.get("color").toString();
             else if (this.get("fill") == false)
                 graphics.strokeStyle = this.get("color").toString();
-            graphics.rect(((this.displayPosition.x) - this.get("width") / 2) - this.game.offset.x, ((this.displayPosition.y) - this.get("height") / 2) - this.game.offset.y, this.get("width"), this.get("height"));
+            graphics.rect(x, y, this.get("width"), this.get("height"));
             if (this.get("fill") == true)
                 graphics.fill();
             else if (this.get("fill") == false)
                 graphics.stroke();
-            graphics.restore();
             var pointerEvent = this.game.pointerEventDetector.inputEvent;
             if (pointerEvent != null) {
-                var inPoint = graphics.isPointInPath(pointerEvent.position.x, pointerEvent.position.y) ?
-                    true : graphics.isPointInStroke(pointerEvent.position.x, pointerEvent.position.y) ?
-                    true : false;
+                var inPoint = Object(graphics).isGraphicInPath((pointerEvent.position.x + x), (pointerEvent.position.y + y));
                 var alpha = (this.parent instanceof __1.Game ? this.get("opacity") : this.parent.get("opacity") * this.get("opacity"));
                 var color = this.get("color");
                 if (inPoint && alpha > 0 && color.alpha > 0) {
                     this.game.pointerEventDetector.characterDetected = this;
                 }
             }
+            graphics.restore();
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation);
         }
     };
@@ -568,7 +571,7 @@ var Condition = /** @class */ (function (_super) {
      * @param dt time difference between the previous frame and the current time
      */
     Condition.prototype.update = function (dt) {
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             var condition = this.get("condition");
             var rightSide = this.get("right side");
             var leftSide = this.get("left side");
@@ -643,7 +646,7 @@ var Condition = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Condition.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition;
             this.displayScale = displayScale;
             this.displayRotation = displayRotation;
@@ -719,7 +722,7 @@ var Container = /** @class */ (function () {
          */
         this.add = this.Storage.add.bind(this.Storage);
         /**
-         * public method to get all the character propertries
+         * public method to get all the character properties
          * @returns return an `Array` of type object
          */
         this.allProperties = this.propertyManager.allProperties.bind(this.propertyManager);
@@ -733,7 +736,7 @@ var Container = /** @class */ (function () {
         /**
          * public method to set an event
          * @param event name of event to add
-         * @param callback callback function to call when the event is emiited
+         * @param callback callback function to call when the event is emitted
          */
         this.on = this.eventEmitter.on.bind(this.eventEmitter);
         /**
@@ -754,7 +757,7 @@ var Container = /** @class */ (function () {
         this.propertyManager.scheme({
             name: propertyOption.name,
             "is destroyed": { value: false, readonly: true, type: "boolean" },
-            "is initalize": { value: false, readonly: true, type: "boolean" },
+            "is initialize": { value: false, readonly: true, type: "boolean" },
             path: String(),
             opacity: propertyOption.opacity != undefined ? propertyOption.opacity : 1,
             position: propertyOption.position != undefined ? propertyOption.position : new math_1.Vector2(0, 0),
@@ -805,17 +808,17 @@ var Container = /** @class */ (function () {
         configurable: true
     });
     /**
-     * public method to initalize the character
+     * public method to initialize the character
      * @param canvas instance of the `HTMLCanvasElement`
-     * @param game insatance of the `Game`
-     * @param parent parnet character instance of the character
+     * @param game instance of the `Game`
+     * @param parent parent character instance of the character
      */
-    Container.prototype.initalize = function (canvas, game, parent) {
-        if (!this.get("is initalize")) {
+    Container.prototype.initialize = function (canvas, game, parent) {
+        if (!this.get("is initialize")) {
             this._parent = parent;
             this._game = game;
             this.canvas = canvas;
-            this.propertyManager.override("is initalize", true);
+            this.propertyManager.override("is initialize", true);
             this.Updater = new Slim.Updater(this.canvas, this._game, this, this.Storage, this.Render);
             this.eventEmitter.emit("init");
         }
@@ -831,7 +834,7 @@ var Container = /** @class */ (function () {
      * @param dt time difference between the previous frame and the current time
      */
     Container.prototype.update = function (dt) {
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             this.eventEmitter.emit("update", dt);
             this.Updater.update(dt);
         }
@@ -844,7 +847,7 @@ var Container = /** @class */ (function () {
      * @param displayRotation actual rotation of the character
      */
     Container.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add(this.get("position"));
             this.displayScale = displayScale.multiply(this.get("scale"));
             this.displayRotation = displayRotation + this.get("rotation");
@@ -920,7 +923,7 @@ var Image = /** @class */ (function (_super) {
      * @param dt time difference between the previous frame and the current time
      */
     Image.prototype.update = function (dt) {
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             if (this.get("source").length == 1) {
                 this.currentIndex = 0;
             }
@@ -944,7 +947,7 @@ var Image = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Image.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add(this.get("position"));
             this.displayScale = displayScale.multiply(this.get("scale"));
             this.displayRotation = displayRotation + this.get("rotation");
@@ -1051,7 +1054,7 @@ var Loop = /** @class */ (function (_super) {
      */
     Loop.prototype.update = function (dt) {
         var _this = this;
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             if (this.get("play") == true) {
                 __spreadArray([], Array.from(Array(this.get("time")).keys()), true).forEach(function (i) {
                     i = i + 1;
@@ -1073,7 +1076,7 @@ var Loop = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Loop.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition;
             this.displayScale = displayScale;
             this.displayRotation = displayRotation;
@@ -1144,7 +1147,7 @@ var Sound = /** @class */ (function (_super) {
      */
     Sound.prototype.update = function (dt) {
         var _this = this;
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             if (this.audio == null) {
                 var audioSource = this.get("source");
                 var audioAsset = this.game.asset(audioSource);
@@ -1188,7 +1191,7 @@ var Sound = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Sound.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition;
             this.displayScale = displayScale;
             this.displayRotation = displayRotation;
@@ -1271,7 +1274,7 @@ var Text = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Text.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add(this.get("position"));
             this.displayScale = displayScale.multiply(this.get("scale"));
             this.displayRotation = displayRotation + this.get("rotation");
@@ -1394,7 +1397,7 @@ var Timer = /** @class */ (function (_super) {
     Timer.prototype.update = function (dt) {
         var waitTime = this.get("wait time");
         var repeat = this.get("repeat");
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             if (this.get("play") == true) {
                 this.currentTime += dt;
                 if (this.currentTime >= waitTime) {
@@ -1417,7 +1420,7 @@ var Timer = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Timer.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition;
             this.displayScale = displayScale;
             this.displayRotation = displayRotation;
@@ -1520,7 +1523,7 @@ var Color = /** @class */ (function () {
      * @param red the saturation of red in the color
      * @param green the saturation of green in the color
      * @param blue the saturation of blue in the color
-     * @param alpha the range of transparence of the color
+     * @param alpha the range of transparency of the color
      */
     function Color(red, green, blue, alpha) {
         if (red === void 0) { red = 0; }
@@ -2123,7 +2126,7 @@ var AssetsLoader = /** @class */ (function () {
             return null;
     };
     /**
-     * public method to check if all the asset is looaded
+     * public method to check if all the asset is loaded
      */
     AssetsLoader.prototype.isAssetsLoaded = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -2161,7 +2164,7 @@ var math_1 = __webpack_require__(/*! ../libs/math */ "./src/libs/math/index.ts")
 var Camera = /** @class */ (function () {
     /**
      * 🛠 utility class to act as a 2D camera
-     * @param game insatance of the `Game`
+     * @param game instance of the `Game`
     */
     function Camera(game) {
         this._offset = new math_1.Vector2(0, 0);
@@ -2283,7 +2286,7 @@ var DataManager = /** @class */ (function () {
     /**
      * public method to get a data stored
      * @param key key used to store the data
-     * @returns if the data exist return the data else retun `null`
+     * @returns if the data exist return the data else return `null`
      */
     DataManager.prototype.get = function (key) {
         var id = this.keyMap.get(key);
@@ -2356,7 +2359,7 @@ var EventEmitter = /** @class */ (function () {
     /**
      * public method to set an event
      * @param event name of event to add
-     * @param callback callback function to call when the event is emiited
+     * @param callback callback function to call when the event is emitted
      */
     EventEmitter.prototype.on = function (event, callback) {
         this.eventMap.set(event, callback);
@@ -2399,7 +2402,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 var KeyboardEventManager = /** @class */ (function () {
     /**
      * 🛠 utility class to handle the keyboard input from the user
-     * @param game insatance of the `Game`
+     * @param game instance of the `Game`
     */
     function KeyboardEventManager(game) {
         this.keyMap = new Map();
@@ -2424,7 +2427,7 @@ var KeyboardEventManager = /** @class */ (function () {
      * @param ev Javascript object that describe the user interaction with the keyboard
      */
     KeyboardEventManager.prototype.onKeyPress = function (ev) {
-        var notAceptedkey = new Set([
+        var notAccepted = new Set([
             "Shift",
             "Control",
             "Alt"
@@ -2436,7 +2439,7 @@ var KeyboardEventManager = /** @class */ (function () {
             keyCombination = keyCombination.concat("SHIFT+".toUpperCase());
         if (ev.altKey)
             keyCombination = keyCombination.concat("ALT+".toUpperCase());
-        if (!notAceptedkey.has(ev.key))
+        if (!notAccepted.has(ev.key))
             keyCombination = keyCombination.concat(ev.key.toUpperCase());
         if (this.keyMap.has(keyCombination))
             console.log(keyCombination);
@@ -2500,8 +2503,8 @@ var PointerInputEvent = /** @class */ (function () {
      * @param otherPosition a vector type array of the other position the device touch/hit after the first touch/hit
      * @param tiltPosition a vector object containing the plane angle (in degrees, in the range of -90 to 90) between the Y–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the Y axis as the `y` value and between the X–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the X axis as the `x` value
      * @param twist the clockwise rotation of the pointer (e.g. pen stylus) around its major axis in degrees, with a value in the range 0 to 359
-     * @param time the number of time in seconds the event happed
-     * @param type indicates the type of event canused device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
+     * @param time the number of time in seconds the event happen
+     * @param type indicates the type of event caused by the device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
      */
     function PointerInputEvent(device, pressure, height, width, position, otherPosition, tiltPosition, twist, time, type) {
         this._device = "mouse";
@@ -2601,7 +2604,7 @@ var PointerInputEvent = /** @class */ (function () {
     });
     Object.defineProperty(PointerInputEvent.prototype, "time", {
         /**
-         * the number of time in seconds the event happed
+         * the number of time in seconds the event happen
          */
         get: function () {
             return this._time;
@@ -2611,7 +2614,7 @@ var PointerInputEvent = /** @class */ (function () {
     });
     Object.defineProperty(PointerInputEvent.prototype, "type", {
         /**
-         * indicates the type of event canused device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
+         * indicates the type of event caused by the device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
          */
         get: function () {
             return this._type;
@@ -2637,7 +2640,7 @@ var PointerEventManager = /** @class */ (function () {
         this.position = new math_1.Vector2();
         this.otherPosition = Array();
         this.tiltPosition = new math_1.Vector2();
-        this.isDraging = false;
+        this.isDragging = false;
         this.twist = 0;
         this.canvas = canvas;
         this.game = game;
@@ -2652,7 +2655,7 @@ var PointerEventManager = /** @class */ (function () {
         var time = 0, type = "move";
         this.device = event.pointerType;
         this.position.setX = event.clientX - this.canvas.getBoundingClientRect().left;
-        this.position.setY = event.clientY - -this.canvas.getBoundingClientRect().top;
+        this.position.setY = event.clientY - this.canvas.getBoundingClientRect().top;
         time = event.timeStamp / 1000;
         this.height = event.height;
         this.width = event.width;
@@ -2663,7 +2666,7 @@ var PointerEventManager = /** @class */ (function () {
         if (event.type == "pointermove" || event.type == "pointerover") {
             if (this.isPointerPressed) {
                 type = "drag";
-                this.isDraging = true;
+                this.isDragging = true;
             }
             else if (!this.isPointerPressed)
                 type = "move";
@@ -2677,13 +2680,13 @@ var PointerEventManager = /** @class */ (function () {
             }
         }
         if (event.type == "pointerup") {
-            if (!this.isDraging) {
+            if (!this.isDragging) {
                 type = "release";
                 if (event.button == 2)
                     type = "right release";
             }
             this.isPointerPressed = false;
-            this.isDraging = false;
+            this.isDragging = false;
         }
         this.gameInputHandle(new PointerInputEvent(this.device, this.pressure, this.height, this.width, this.position, this.otherPosition, this.tiltPosition, this.twist, time, type));
     };
@@ -2695,14 +2698,14 @@ var PointerEventManager = /** @class */ (function () {
     PointerEventManager.prototype.swipeEventHandle = function (eventName, event) {
         var swipePositionDiff = new math_1.Vector2(), type = "move", time = event.timeStamp / 1000;
         if (eventName == "touchstart") {
-            this.swipeStartPosition.setX = event.touches[0].clientX;
-            this.swipeStartPosition.setY = event.touches[0].clientY;
+            this.swipeStartPosition.setX = event.touches[0].clientX - this.canvas.getBoundingClientRect().left;
+            this.swipeStartPosition.setY = event.touches[0].clientY - this.canvas.getBoundingClientRect().top;
             this.position = this.swipeStartPosition;
             this.swipeStarted = true;
         }
         else if (eventName == "touchmove") {
             if (this.swipeStarted) {
-                var otherSwipePosition = new math_1.Vector2(event.touches[0].clientX, event.touches[0].clientY);
+                var otherSwipePosition = new math_1.Vector2(event.touches[0].clientX - this.canvas.getBoundingClientRect().left, event.touches[0].clientY - this.canvas.getBoundingClientRect().left);
                 this.otherPosition = Array();
                 this.otherPosition.push(otherSwipePosition);
                 swipePositionDiff = this.swipeStartPosition.substr(otherSwipePosition);
@@ -2885,7 +2888,7 @@ var PropertyManager = /** @class */ (function () {
         this.propertyMap.delete(name);
     };
     /**
-     * public method to get all the character propertries
+     * public method to get all the character properties
      * @returns return an `Array` of type object
      */
     PropertyManager.prototype.allProperties = function () {
@@ -2999,15 +3002,15 @@ var Storage = /** @class */ (function () {
         configurable: true
     });
     /**
-     * public method to list all the charcter children
+     * public method to list all the character children
      * @returns `Array` containing all the instance of the character children
      */
     Storage.prototype.list = function () {
         return Array.from(this.storageMap.values());
     };
     /**
-     * public method to list all the charcter children which have not been initalize
-     * @returns `Array` containing all the instance of the character children which have not been initalize
+     * public method to list all the character children which have not been initialize
+     * @returns `Array` containing all the instance of the character children which have not been initialize
      */
     Storage.prototype.listPredefineCharacter = function () {
         return this.predefineCharacterList;
@@ -3039,10 +3042,10 @@ var Storage = /** @class */ (function () {
             has = this.storageMap.has(pathFormat[0]);
         }
         else if (pathFormat.length > 1) {
-            pathFormat.forEach(function (sigularPath) {
+            pathFormat.forEach(function (singularPath) {
                 if (character != null) {
-                    if (character.has(sigularPath)) {
-                        character = character.child(sigularPath);
+                    if (character.has(singularPath)) {
+                        character = character.child(singularPath);
                         has = true;
                     }
                     else {
@@ -3165,8 +3168,8 @@ var Updater = /** @class */ (function () {
         var characterList = this.storage.list();
         var predefineCharacterList = this.storage.listPredefineCharacter();
         predefineCharacterList.forEach(function (character) {
-            if (!character.get("is initalize")) {
-                character.initalize(_this.canvas, _this.game, _this.character);
+            if (!character.get("is initialize")) {
+                character.initialize(_this.canvas, _this.game, _this.character);
                 characterList.push(character);
             }
         });

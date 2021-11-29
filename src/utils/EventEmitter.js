@@ -21,7 +21,7 @@ var EventEmitter = /** @class */ (function () {
     /**
      * public method to set an event
      * @param event name of event to add
-     * @param callback callback function to call when the event is emiited
+     * @param callback callback function to call when the event is emitted
      */
     EventEmitter.prototype.on = function (event, callback) {
         this.eventMap.set(event, callback);

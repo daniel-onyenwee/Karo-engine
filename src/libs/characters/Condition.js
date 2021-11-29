@@ -42,7 +42,7 @@ var Condition = /** @class */ (function (_super) {
      * @param dt time difference between the previous frame and the current time
      */
     Condition.prototype.update = function (dt) {
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             var condition = this.get("condition");
             var rightSide = this.get("right side");
             var leftSide = this.get("left side");
@@ -117,7 +117,7 @@ var Condition = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Condition.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition;
             this.displayScale = displayScale;
             this.displayRotation = displayRotation;

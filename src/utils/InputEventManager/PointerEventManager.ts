@@ -103,7 +103,7 @@ export class PointerInputEvent {
     private _time:number
 
     /**
-     * the number of time in seconds the event happed
+     * the number of time in seconds the event happen
      */
     public get time(): number {
         return this._time
@@ -112,7 +112,7 @@ export class PointerInputEvent {
     private _type:string
 
     /**
-     * indicates the type of event canused device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
+     * indicates the type of event caused by the device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
      */
     public get type(): string {
         return this._type
@@ -128,8 +128,8 @@ export class PointerInputEvent {
      * @param otherPosition a vector type array of the other position the device touch/hit after the first touch/hit
      * @param tiltPosition a vector object containing the plane angle (in degrees, in the range of -90 to 90) between the Y–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the Y axis as the `y` value and between the X–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the X axis as the `x` value
      * @param twist the clockwise rotation of the pointer (e.g. pen stylus) around its major axis in degrees, with a value in the range 0 to 359
-     * @param time the number of time in seconds the event happed
-     * @param type indicates the type of event canused device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
+     * @param time the number of time in seconds the event happen
+     * @param type indicates the type of event caused by the device (move, drag, press, release, right press, right release, swipe up, swipe down, swipe right, swipe left)
      */
     constructor(
        device:string,
@@ -181,7 +181,7 @@ export default class PointerEventManager {
 
     private tiltPosition:Vector2 = new Vector2()
 
-    private isDraging:boolean = false
+    private isDragging:boolean = false
 
     private twist:number = 0
 
@@ -209,7 +209,7 @@ export default class PointerEventManager {
         let time:number = 0, type:string = "move"      
         this.device = event.pointerType
         this.position.setX = event.clientX - this.canvas.getBoundingClientRect().left
-        this.position.setY = event.clientY - - this.canvas.getBoundingClientRect().top
+        this.position.setY = event.clientY - this.canvas.getBoundingClientRect().top
         time = event.timeStamp/1000
         this.height = event.height
         this.width = event.width
@@ -220,7 +220,7 @@ export default class PointerEventManager {
         if (event.type == "pointermove" || event.type == "pointerover" ) {
             if (this.isPointerPressed) {
                 type = "drag"
-                this.isDraging = true
+                this.isDragging = true
             }
             else if (!this.isPointerPressed)
                 type = "move"
@@ -235,13 +235,13 @@ export default class PointerEventManager {
         }
         
         if (event.type == "pointerup") {
-            if (!this.isDraging) {
+            if (!this.isDragging) {
                 type = "release"
                 if  (event.button == 2)
                     type = "right release" 
             }
             this.isPointerPressed = false
-            this.isDraging = false
+            this.isDragging = false
         }
 
         this.gameInputHandle(new PointerInputEvent(this.device, this.pressure, this.height, this.width, this.position, this.otherPosition, this.tiltPosition, this.twist, time, type))
@@ -255,13 +255,13 @@ export default class PointerEventManager {
     private swipeEventHandle(eventName:string, event:TouchEvent) {
         let swipePositionDiff:Vector2 = new Vector2(), type:string = "move", time:number = event.timeStamp/1000
         if (eventName == "touchstart") {
-            this.swipeStartPosition.setX = event.touches[0].clientX
-            this.swipeStartPosition.setY = event.touches[0].clientY
+            this.swipeStartPosition.setX = event.touches[0].clientX - this.canvas.getBoundingClientRect().left
+            this.swipeStartPosition.setY = event.touches[0].clientY - this.canvas.getBoundingClientRect().top
             this.position = this.swipeStartPosition
             this.swipeStarted = true
         } else if (eventName == "touchmove") {
             if (this.swipeStarted) {
-                let otherSwipePosition:Vector2 = new Vector2(event.touches[0].clientX, event.touches[0].clientY)
+                let otherSwipePosition:Vector2 = new Vector2(event.touches[0].clientX - this.canvas.getBoundingClientRect().left, event.touches[0].clientY - this.canvas.getBoundingClientRect().left)
                 this.otherPosition = Array<Vector2>()
                 this.otherPosition.push(otherSwipePosition)
                 swipePositionDiff = this.swipeStartPosition.substr(otherSwipePosition)

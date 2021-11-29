@@ -7,7 +7,7 @@ interface TimerPropertyOption {
      */
     name: string
     /**
-     * set character opactiy. default value `1`
+     * set character opacity. default value `1`
      */
     opacity?: number
     /**
@@ -15,7 +15,7 @@ interface TimerPropertyOption {
      */
     visible?: boolean
     /**
-     * specifies the stack level of the caharacter. default value `1`
+     * specifies the stack level of the character. default value `1`
      */
     "z index"?: number
     "wait time"?: number
@@ -58,7 +58,7 @@ export default class Timer extends Container {
     public update(dt:number): void {
         let waitTime:number = this.get("wait time") as number
         let repeat:boolean = this.get("repeat") as boolean
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             if (this.get("play") == true) {
                 this.currentTime += dt
                 if (this.currentTime >= waitTime) {
@@ -82,7 +82,7 @@ export default class Timer extends Container {
      * @param displayRotation actual rotation of the character
      */
     public render(graphics:CanvasRenderingContext2D, displayPosition:Vector2, displayScale:Vector2, displayRotation:number): void {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition
             this.displayScale = displayScale
             this.displayRotation = displayRotation

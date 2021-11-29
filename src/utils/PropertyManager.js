@@ -93,7 +93,7 @@ var PropertyManager = /** @class */ (function () {
         this.propertyMap.delete(name);
     };
     /**
-     * public method to get all the character propertries
+     * public method to get all the character properties
      * @returns return an `Array` of type object
      */
     PropertyManager.prototype.allProperties = function () {

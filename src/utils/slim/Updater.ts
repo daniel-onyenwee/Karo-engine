@@ -53,8 +53,8 @@ export default class Updater {
         let predefineCharacterList:Array<CharacterChildrenType> = this.storage.listPredefineCharacter()
 
         predefineCharacterList.forEach(character => {
-            if (!character.get("is initalize")) {
-                character.initalize(this.canvas, this.game, this.character)
+            if (!character.get("is initialize")) {
+                character.initialize(this.canvas, this.game, this.character)
                 characterList.push(character)
             }
         })

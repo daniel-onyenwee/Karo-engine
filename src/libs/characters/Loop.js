@@ -54,7 +54,7 @@ var Loop = /** @class */ (function (_super) {
      */
     Loop.prototype.update = function (dt) {
         var _this = this;
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             if (this.get("play") == true) {
                 __spreadArray([], Array.from(Array(this.get("time")).keys()), true).forEach(function (i) {
                     i = i + 1;
@@ -76,7 +76,7 @@ var Loop = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Loop.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition;
             this.displayScale = displayScale;
             this.displayRotation = displayRotation;

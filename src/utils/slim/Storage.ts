@@ -29,7 +29,7 @@ export default class Storage {
     }
 
     /**
-     * public method to list all the charcter children
+     * public method to list all the character children
      * @returns `Array` containing all the instance of the character children
      */
     public list(): Array<CharacterChildrenType> {
@@ -37,8 +37,8 @@ export default class Storage {
     }
 
     /**
-     * public method to list all the charcter children which have not been initalize
-     * @returns `Array` containing all the instance of the character children which have not been initalize
+     * public method to list all the character children which have not been initialize
+     * @returns `Array` containing all the instance of the character children which have not been initialize
      */
     public listPredefineCharacter(): Array<CharacterChildrenType> {
         return this.predefineCharacterList
@@ -73,10 +73,10 @@ export default class Storage {
         if (pathFormat.length == 1) {
             has = this.storageMap.has(pathFormat[0])
         } else if (pathFormat.length > 1) {
-            pathFormat.forEach(sigularPath => {
+            pathFormat.forEach(singularPath => {
                 if (character != null) {
-                    if (character.has(sigularPath)) {
-                        character = character.child(sigularPath)
+                    if (character.has(singularPath)) {
+                        character = character.child(singularPath)
                         has = true
                     } else {
                         has = false

@@ -8,7 +8,7 @@ export default class Camera {
     
     /**
      * 🛠 utility class to act as a 2D camera
-     * @param game insatance of the `Game`
+     * @param game instance of the `Game`
     */
     constructor(game:Game) {
         this.game = game

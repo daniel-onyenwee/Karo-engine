@@ -107,7 +107,7 @@ export default class PropertyManager {
     }
 
     /**
-     * public method to get all the character propertries
+     * public method to get all the character properties
      * @returns return an `Array` of type object
      */
     public allProperties(): Array<{name: string, value: PropertyValueType, type: PropertyValueTypeString}> {

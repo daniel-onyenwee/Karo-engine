@@ -21,15 +21,15 @@ var Storage = /** @class */ (function () {
         configurable: true
     });
     /**
-     * public method to list all the charcter children
+     * public method to list all the character children
      * @returns `Array` containing all the instance of the character children
      */
     Storage.prototype.list = function () {
         return Array.from(this.storageMap.values());
     };
     /**
-     * public method to list all the charcter children which have not been initalize
-     * @returns `Array` containing all the instance of the character children which have not been initalize
+     * public method to list all the character children which have not been initialize
+     * @returns `Array` containing all the instance of the character children which have not been initialize
      */
     Storage.prototype.listPredefineCharacter = function () {
         return this.predefineCharacterList;
@@ -61,10 +61,10 @@ var Storage = /** @class */ (function () {
             has = this.storageMap.has(pathFormat[0]);
         }
         else if (pathFormat.length > 1) {
-            pathFormat.forEach(function (sigularPath) {
+            pathFormat.forEach(function (singularPath) {
                 if (character != null) {
-                    if (character.has(sigularPath)) {
-                        character = character.child(sigularPath);
+                    if (character.has(singularPath)) {
+                        character = character.child(singularPath);
                         has = true;
                     }
                     else {

@@ -54,7 +54,7 @@ export default class Box extends Container {
      * @param displayRotation actual rotation of the character
      */
     public render(graphics:CanvasRenderingContext2D, displayPosition:Vector2, displayScale:Vector2, displayRotation:number): void {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition.add((this.get("position") as Vector2))
             this.displayScale = displayScale.multiply((this.get("scale") as Vector2))
             this.displayRotation = displayRotation + (this.get("rotation") as number)
@@ -70,14 +70,16 @@ export default class Box extends Container {
             graphics.shadowOffsetX = (this.get("shadow offset") as Vector2).x
             graphics.shadowOffsetY = (this.get("shadow offset") as Vector2).y
             graphics.lineWidth = this.get("line width") as number
+            let x:number = ((this.displayPosition.x) - (this.get("width") as number)/2) - this.game.offset.x
+            let y:number = ((this.displayPosition.y) - (this.get("height") as number)/2) - this.game.offset.y
             graphics.beginPath()
             if (this.get("fill") == true) 
                 graphics.fillStyle = (this.get("color") as Color).toString()
             else if (this.get("fill") == false)
                 graphics.strokeStyle = (this.get("color") as Color).toString()
             graphics.rect(
-                ((this.displayPosition.x) - (this.get("width") as number)/2) - this.game.offset.x,
-                ((this.displayPosition.y) - (this.get("height") as number)/2) - this.game.offset.y,
+                x,
+                y,
                 (this.get("width") as number),
                 (this.get("height") as number)
             )
@@ -86,19 +88,16 @@ export default class Box extends Container {
             else if (this.get("fill") == false)
                 graphics.stroke()
             
-            graphics.restore()
-
             let pointerEvent:PointerInputEvent|null = this.game.pointerEventDetector.inputEvent
             if (pointerEvent != null) {
-                let inPoint = graphics.isPointInPath(pointerEvent.position.x, pointerEvent.position.y) ? 
-                    true : graphics.isPointInStroke(pointerEvent.position.x, pointerEvent.position.y) ? 
-                    true : false
+                let inPoint = Object(graphics).isGraphicInPath((pointerEvent.position.x + x), (pointerEvent.position.y + y)) as boolean
                 let alpha:number = (this.parent instanceof Game ? (this.get("opacity") as number) : (this.parent.get("opacity") as number) * (this.get("opacity") as number))
                 let color:Color = (this.get("color") as Color)
                 if (inPoint && alpha > 0 && color.alpha > 0) {
                     this.game.pointerEventDetector.characterDetected = this
                 }
             }
+            graphics.restore()
 
             this.Render.render(graphics, this.displayPosition, this.displayScale, this.displayRotation)
         }

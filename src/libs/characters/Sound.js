@@ -49,7 +49,7 @@ var Sound = /** @class */ (function (_super) {
      */
     Sound.prototype.update = function (dt) {
         var _this = this;
-        if (this.get("is initalize") && !this.get("is destroyed")) {
+        if (this.get("is initialize") && !this.get("is destroyed")) {
             if (this.audio == null) {
                 var audioSource = this.get("source");
                 var audioAsset = this.game.asset(audioSource);
@@ -93,7 +93,7 @@ var Sound = /** @class */ (function (_super) {
      * @param displayRotation actual rotation of the character
      */
     Sound.prototype.render = function (graphics, displayPosition, displayScale, displayRotation) {
-        if (this.get("is initalize") && !this.get("is destroyed") && this.get("visible")) {
+        if (this.get("is initialize") && !this.get("is destroyed") && this.get("visible")) {
             this.displayPosition = displayPosition;
             this.displayScale = displayScale;
             this.displayRotation = displayRotation;

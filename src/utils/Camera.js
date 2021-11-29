@@ -4,7 +4,7 @@ var math_1 = require("../libs/math");
 var Camera = /** @class */ (function () {
     /**
      * 🛠 utility class to act as a 2D camera
-     * @param game insatance of the `Game`
+     * @param game instance of the `Game`
     */
     function Camera(game) {
         this._offset = new math_1.Vector2(0, 0);

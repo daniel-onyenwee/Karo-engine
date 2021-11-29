@@ -50,7 +50,7 @@ var Game = /** @class */ (function () {
         /**
          * public method to set an event
          * @param event name of event to add
-         * @param callback callback function to call when the event is emiited
+         * @param callback callback function to call when the event is emitted
          */
         this.on = this.eventEmitter.on.bind(this.eventEmitter);
         /**
@@ -113,7 +113,7 @@ var Game = /** @class */ (function () {
         */
         this.has = this.Storage.has.bind(this.Storage);
         /**
-         * public method to get all the character propertries
+         * public method to get all the character properties
          * @returns return an `Array` of type object
          */
         this.allProperties = this.propertyManager.allProperties.bind(this.propertyManager);
@@ -195,12 +195,15 @@ var Game = /** @class */ (function () {
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
         var ctx = canvas.getContext('2d');
-        ctx.constructor.prototype.isTextInPath = function (region, x, y) {
+        ctx.constructor.prototype.isGraphicInPath = function (x, y, region) {
             var _this = this;
-            _this.beginPath();
-            _this.rect(region.x, region.y, region.w, region.h);
-            return _this.isPointInPath(x, y);
+            if (region != undefined) {
+                _this.beginPath();
+                _this.rect(region.x, region.y, region.w, region.h);
+            }
+            return _this.isPointInPath(x, y) ? true : _this.isPointInStroke(x, y) ? true : false;
         };
+        ctx.constructor.prototype.devicePixelRatio = dpr;
         ctx.scale(dpr, dpr);
         return ctx;
     };

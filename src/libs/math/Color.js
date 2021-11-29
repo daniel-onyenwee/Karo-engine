@@ -6,7 +6,7 @@ var Color = /** @class */ (function () {
      * @param red the saturation of red in the color
      * @param green the saturation of green in the color
      * @param blue the saturation of blue in the color
-     * @param alpha the range of transparence of the color
+     * @param alpha the range of transparency of the color
      */
     function Color(red, green, blue, alpha) {
         if (red === void 0) { red = 0; }
